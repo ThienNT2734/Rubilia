@@ -1,0 +1,157 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+.cf-container {
+    max-width: 450px;
+    margin: 40px auto;
+    padding: 25px;
+    background: linear-gradient(135deg, #e6f3ff, #f3e8ff);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    font-family: 'Poppins', sans-serif;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cf-container:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+}
+
+.cf-header {
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.cf-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #1e3a8a;
+    position: relative;
+    padding-bottom: 8px;
+}
+
+.cf-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(to right, #3b82f6, #a855f7);
+}
+
+.cf-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.cf-form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.cf-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 8px;
+}
+
+.cf-input, .cf-textarea, .cf-select {
+    padding: 12px;
+    font-size: 15px;
+    color: #1f2937;
+    background: #f9fafb;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.cf-input:focus, .cf-textarea:focus, .cf-select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+    background: #ffffff;
+}
+
+.cf-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.cf-error {
+    padding: 12px;
+    font-size: 14px;
+    color: #ffffff;
+    background: #ef4444;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+    animation: fade-in 0.5s ease;
+}
+
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.cf-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.cf-submit-btn, .cf-cancel-btn {
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cf-submit-btn {
+    background: linear-gradient(to right, #3b82f6, #a855f7);
+}
+
+.cf-cancel-btn {
+    background: linear-gradient(to right, #f87171, #ef4444);
+}
+
+.cf-submit-btn:hover, .cf-cancel-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cf-submit-btn:active, .cf-cancel-btn:active {
+    transform: scale(0.98);
+}
+
+@media (max-width: 480px) {
+    .cf-container {
+        margin: 20px;
+        padding: 20px;
+    }
+
+    .cf-title {
+        font-size: 24px;
+    }
+
+    .cf-input, .cf-textarea, .cf-select {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .cf-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .cf-submit-btn, .cf-cancel-btn {
+        width: 100%;
+        padding: 12px;
+    }
+}
