@@ -1,0 +1,32 @@
+/* Flash Sale Section */
+.flash-sale-section {
+    background: #ffeaa7;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.flash-sale-card {
+    position: relative;
+    border: 2px solid #f1c40f;
+    border-radius: 10px;
+    padding: 10px;
+    background: #fff;
+}
+
+.flash-sale-info {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.flash-sale-discount {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #e74c3c;
+}
+
+.flash-sale-timer {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #f39c12;
+}

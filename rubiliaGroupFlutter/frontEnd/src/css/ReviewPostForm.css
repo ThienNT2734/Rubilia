@@ -1,0 +1,123 @@
+.review-post-form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.review-post-form-title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.review-post-form-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.review-post-form-group {
+    margin-bottom: 20px;
+}
+
+.review-post-form-label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.review-post-form-control {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.review-post-form-control[type="url"] {
+    font-family: monospace;
+}
+
+.review-post-tiptap-editor {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+.review-post-tiptap-toolbar {
+    margin-bottom: 10px;
+}
+
+.review-post-tiptap-toolbar button {
+    margin-right: 5px;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    background: #f9f9f9;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.review-post-tiptap-toolbar button.is-active {
+    background: #007bff;
+    color: #fff;
+}
+
+.review-post-tiptap-toolbar select {
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.review-post-image-preview {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.review-post-image-item {
+    position: relative;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.review-post-image-remove-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #ff4d4f;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 2px 6px;
+    cursor: pointer;
+}
+
+.review-post-error {
+    color: #ff4d4f;
+    margin-bottom: 20px;
+}
+
+.review-post-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.review-post-btn-primary {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.review-post-btn-secondary {
+    background: #6c757d;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+}
