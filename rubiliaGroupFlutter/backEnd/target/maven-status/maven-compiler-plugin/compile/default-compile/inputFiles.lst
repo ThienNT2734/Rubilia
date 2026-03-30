@@ -29,6 +29,7 @@ C:\Users\HOME\Downloads\webbanhang\backend\src\main\java\com\rubilia\exercise201
 C:\Users\HOME\Downloads\webbanhang\backend\src\main\java\com\rubilia\exercise201\dto\ProductDTO.java
 C:\Users\HOME\Downloads\webbanhang\backend\src\main\java\com\rubilia\exercise201\dto\ProductShippingInfoDTO.java
 C:\Users\HOME\Downloads\webbanhang\backend\src\main\java\com\rubilia\exercise201\dto\ReviewPostDTO.java
+C:\Users\HOME\Downloads\webbanhang\backend\src\main\java\com\rubilia\exercise201\dto\SentimentAnalysisResult.java
 C:\Users\HOME\Downloads\webbanhang\backend\src\main\java\com\rubilia\exercise201\entity\Attribute.java
 C:\Users\HOME\Downloads\webbanhang\backend\src\main\java\com\rubilia\exercise201\entity\AttributeValue.java
 C:\Users\HOME\Downloads\webbanhang\backend\src\main\java\com\rubilia\exercise201\entity\Card.java
@@ -63,6 +64,7 @@ C:\Users\HOME\Downloads\webbanhang\backend\src\main\java\com\rubilia\exercise201
 C:\Users\HOME\Downloads\webbanhang\backend\src\main\java\com\rubilia\exercise201\entity\Role.java
 C:\Users\HOME\Downloads\webbanhang\backend\src\main\java\com\rubilia\exercise201\entity\Sale.java
 C:\Users\HOME\Downloads\webbanhang\backend\src\main\java\com\rubilia\exercise201\entity\Sell.java
+C:\Users\HOME\Downloads\webbanhang\backend\src\main\java\com\rubilia\exercise201\entity\SentimentType.java
 C:\Users\HOME\Downloads\webbanhang\backend\src\main\java\com\rubilia\exercise201\entity\ShippingRate.java
 C:\Users\HOME\Downloads\webbanhang\backend\src\main\java\com\rubilia\exercise201\entity\ShippingZone.java
 C:\Users\HOME\Downloads\webbanhang\backend\src\main\java\com\rubilia\exercise201\entity\Slideshow.java
@@ -125,6 +127,7 @@ C:\Users\HOME\Downloads\webbanhang\backend\src\main\java\com\rubilia\exercise201
 C:\Users\HOME\Downloads\webbanhang\backend\src\main\java\com\rubilia\exercise201\service\CouponService.java
 C:\Users\HOME\Downloads\webbanhang\backend\src\main\java\com\rubilia\exercise201\service\CustomerAddressService.java
 C:\Users\HOME\Downloads\webbanhang\backend\src\main\java\com\rubilia\exercise201\service\CustomerService.java
+C:\Users\HOME\Downloads\webbanhang\backend\src\main\java\com\rubilia\exercise201\service\GeminiService.java
 C:\Users\HOME\Downloads\webbanhang\backend\src\main\java\com\rubilia\exercise201\service\impl\AttributeServiceImpl.java
 C:\Users\HOME\Downloads\webbanhang\backend\src\main\java\com\rubilia\exercise201\service\impl\CardItemServiceImpl.java
 C:\Users\HOME\Downloads\webbanhang\backend\src\main\java\com\rubilia\exercise201\service\impl\CardServiceImpl.java
