@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -283,7 +284,7 @@ public class OrderServiceImpl implements OrderService {
             orderItemRepository.saveAll(orderItems);
             logger.info("Saved {} order items for order id: {}", orderItems.size(), orderId);
 
-            return ResponseEntity.ok("Thanh toán thành công");
+            return ResponseEntity.ok(Map.of("orderId", orderId));
         } catch (IllegalArgumentException e) {
             logger.error("Validation error during checkout: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -294,6 +295,21 @@ public class OrderServiceImpl implements OrderService {
             logger.error("Unexpected error during checkout: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body("Lỗi khi thanh toán: " + e.getMessage());
         }
+    }
+
+    @Override
+    public Order updatePaymentStatus(String orderId, String paymentStatus) {
+        logger.info("Updating payment status for order {} to {}", orderId, paymentStatus);
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
+        order.setPaymentStatus(paymentStatus);
+
+        if ("PAID".equalsIgnoreCase(paymentStatus)) {
+            orderStatusRepository.findByStatusName("Paid")
+                    .ifPresent(order::setOrderStatus);
+        }
+
+        return orderRepository.save(order);
     }
 
     @Override

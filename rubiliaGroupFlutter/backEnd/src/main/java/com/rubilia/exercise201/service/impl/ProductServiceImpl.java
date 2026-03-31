@@ -95,11 +95,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Product> getProductById(UUID id) {
         return productRepository.findById(id);
     }
