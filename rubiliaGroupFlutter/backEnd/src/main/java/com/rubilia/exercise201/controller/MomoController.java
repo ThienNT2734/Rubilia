@@ -69,14 +69,29 @@ public class MomoController {
     @GetMapping("/return")
     public RedirectView momoReturn(@RequestParam Map<String, String> queryParams) {
         String orderId = queryParams.get("orderId");
+        String amount = queryParams.get("amount");
         String resultCode = queryParams.get("resultCode");
+        String signature = queryParams.get("signature");
 
         if (orderId == null || orderId.isEmpty()) {
             return new RedirectView("http://localhost:3000/checkout?status=failed&message=Missing+orderId");
         }
 
+        // *** CRITICAL SECURITY FIX: Validate signature ***
+        boolean isSignatureValid = momoService.validateSignature(queryParams);
+        if (!isSignatureValid) {
+            logger.error("MoMo return signature mismatch for orderId: {}", orderId);
+            return new RedirectView("http://localhost:3000/checkout?status=failed&message=Invalid+Signature");
+        }
+
         return orderService.findById(orderId)
                 .map(order -> {
+                    // *** CRITICAL SECURITY FIX: Validate amount ***
+                    long expectedAmount = order.getTotalPrice().longValue();
+                    if (Long.parseLong(amount) != expectedAmount) {
+                        return new RedirectView("http://localhost:3000/checkout?status=failed&orderId=" + order.getId() + "&message=Amount+mismatch");
+                    }
+
                     String finalStatus;
                     if ("0".equals(resultCode)) {
                         if ("PAID".equalsIgnoreCase(order.getPaymentStatus())) {

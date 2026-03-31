@@ -15,6 +15,7 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.Map;
 
 @Service
@@ -102,6 +103,35 @@ public class MomoServiceImpl implements MomoService {
             throw new RuntimeException("MoMo request failed: " + response.body());
         } catch (Exception e) {
             throw new RuntimeException("Unable to create MoMo payment URL: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public boolean validateSignature(Map<String, String> queryParams) {
+        try {
+            String signatureFromMomo = queryParams.get("signature");
+            if (signatureFromMomo == null || signatureFromMomo.isBlank()) {
+                return false;
+            }
+
+            String rawSignature = "accessKey=" + accessKey +
+                    "&amount=" + queryParams.getOrDefault("amount", "") +
+                    "&extraData=" + queryParams.getOrDefault("extraData", "") +
+                    "&message=" + queryParams.getOrDefault("message", "") +
+                    "&orderId=" + queryParams.getOrDefault("orderId", "") +
+                    "&orderInfo=" + queryParams.getOrDefault("orderInfo", "") +
+                    "&orderType=" + queryParams.getOrDefault("orderType", "") +
+                    "&partnerCode=" + queryParams.getOrDefault("partnerCode", "") +
+                    "&payType=" + queryParams.getOrDefault("payType", "") +
+                    "&requestId=" + queryParams.getOrDefault("requestId", "") +
+                    "&responseTime=" + queryParams.getOrDefault("responseTime", "") +
+                    "&resultCode=" + queryParams.getOrDefault("resultCode", "") +
+                    "&transId=" + queryParams.getOrDefault("transId", "");
+
+            String expectedSignature = hmacSHA256(secretKey, rawSignature);
+            return expectedSignature.equals(signatureFromMomo);
+        } catch (Exception e) {
+            return false;
         }
     }
 
