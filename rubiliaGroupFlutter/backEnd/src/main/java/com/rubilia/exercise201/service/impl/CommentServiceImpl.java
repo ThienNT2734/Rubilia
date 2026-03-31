@@ -1,11 +1,15 @@
 package com.rubilia.exercise201.service.impl;
 
+import com.rubilia.exercise201.dto.SentimentAnalysisResult;
 import com.rubilia.exercise201.entity.Comment;
 import com.rubilia.exercise201.entity.CommentStatus;
+import com.rubilia.exercise201.entity.SentimentType;
 import com.rubilia.exercise201.repository.CommentRepository;
 import com.rubilia.exercise201.service.CommentService;
+import com.rubilia.exercise201.service.GeminiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,11 +18,20 @@ import java.util.UUID;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
+    private final GeminiService geminiService;
 
     @Override
     public Comment createComment(String email, Comment comment) {
         comment.setEmail(email);
         comment.setStatus(CommentStatus.PENDING);
+        SentimentAnalysisResult result = geminiService.analyzeComment(
+                comment.getProduct() != null ? comment.getProduct().getProductName() : null,
+                comment.getContent()
+        );
+        comment.setSentiment(result.getSentiment() != null ? result.getSentiment() : SentimentType.UNKNOWN);
+        comment.setSentimentScore(result.getScore());
+        comment.setSentimentExplanation(result.getExplanation());
+        comment.setAnalyzedAt(LocalDateTime.now());
         return commentRepository.save(comment);
     }
 

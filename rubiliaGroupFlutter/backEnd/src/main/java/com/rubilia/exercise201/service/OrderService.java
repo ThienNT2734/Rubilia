@@ -32,6 +32,9 @@ public interface OrderService {
     // Phương thức checkout mới
     ResponseEntity<?> processCheckout(Object orderData);
 
+    // Cập nhật trạng thái thanh toán VNPAY
+    Order updatePaymentStatus(String orderId, String paymentStatus);
+
     // Các phương thức cập nhật trạng thái đơn hàng
     Order approveOrder(UUID orderId, UUID staffId);
     Order approveOrder(String orderId, UUID staffId);

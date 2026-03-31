@@ -1,0 +1,415 @@
+.admin-dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    background: #f4f7fa;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.admin-dashboard-sidebar {
+    width: 250px;
+    background: #ffffff;
+    border-right: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.admin-dashboard-header {
+    margin-bottom: 30px;
+}
+
+.admin-dashboard-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a202c;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-dashboard-title::before {
+    content: '🛠️';
+    font-size: 1.2rem;
+}
+
+.admin-dashboard-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-grow: 1;
+}
+
+.admin-dashboard-tab-btn {
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #4a5568;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.admin-dashboard-tab-btn:hover {
+    background: #edf2f7;
+    color: #2d3748;
+}
+
+.admin-dashboard-tab-btn.active {
+    background: #2b6cb0;
+    color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tab-icon {
+    font-size: 1.1rem;
+}
+
+.admin-dashboard-logout-btn {
+    margin-top: auto;
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #ffffff;
+    background: #e53e3e;
+    border: none;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.admin-dashboard-logout-btn:hover {
+    background: #c53030;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.admin-dashboard-content {
+    flex-grow: 1;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.admin-dashboard-tab-content {
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.admin-dashboard-tab-content h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 20px;
+}
+
+.admin-dashboard-actions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.admin-dashboard-add-btn {
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #ffffff;
+    background: #2b6cb0;
+    border: none;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.admin-dashboard-add-btn:hover {
+    background: #2c5282;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.admin-dashboard-add-btn::before {
+    content: '➕';
+    font-size: 0.9rem;
+}
+
+.admin-dashboard-search {
+    margin-bottom: 20px;
+}
+
+.admin-dashboard-search input {
+    width: 300px;
+    padding: 10px 16px;
+    font-size: 0.95rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.admin-dashboard-search input:focus {
+    border-color: #2b6cb0;
+    box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.1);
+    outline: none;
+}
+
+.admin-dashboard-toast {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    padding: 12px 20px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #ffffff;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    animation: slideIn 0.3s ease, slideOut 0.3s ease 2.7s;
+}
+
+.admin-dashboard-toast-success {
+    background: #38a169;
+}
+
+.admin-dashboard-toast-error {
+    background: #e53e3e;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(-100%); opacity: 0; }
+}
+
+.admin-dashboard-table-container {
+    overflow-x: auto;
+}
+
+.admin-dashboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+}
+
+.admin-dashboard-table thead {
+    background: #edf2f7;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.admin-dashboard-table th {
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #2d3748;
+    text-align: left;
+    text-transform: uppercase;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.admin-dashboard-table tbody tr {
+    border-bottom: 1px solid #e2e8f0;
+    transition: background 0.2s ease;
+}
+
+.admin-dashboard-table tbody tr:hover {
+    background: #f7fafc;
+}
+
+.admin-dashboard-table td {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    color: #4a5568;
+}
+
+.admin-dashboard-table td.actions {
+    text-align: center;
+    white-space: nowrap;
+}
+
+.admin-dashboard-table .product-image {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+}
+
+.admin-dashboard-table .edit-btn {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #ffffff;
+    background: #38a169;
+    border: none;
+    border-radius: 4px;
+    margin-right: 8px;
+    transition: all 0.3s ease;
+}
+
+.admin-dashboard-table .edit-btn:hover {
+    background: #2f855a;
+}
+
+.admin-dashboard-table .delete-btn {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #ffffff;
+    background: #e53e3e;
+    border: none;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.admin-dashboard-table .delete-btn:hover {
+    background: #c53030;
+}
+
+.admin-dashboard-empty {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #718096;
+    text-align: center;
+    padding: 20px;
+    background: #f7fafc;
+    border-radius: 6px;
+    border: 1px dashed #e2e8f0;
+}
+
+.admin-dashboard-form-control {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.admin-dashboard-form-control:focus {
+    border-color: #2b6cb0;
+    box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.1);
+    outline: none;
+}
+
+.admin-dashboard-accordion {
+    margin-bottom: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+}
+
+.admin-dashboard-accordion-header {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #2d3748;
+    background: #f7fafc;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.admin-dashboard-accordion-header:hover {
+    background: #edf2f7;
+}
+
+.admin-dashboard-accordion-content {
+    display: none;
+    padding: 16px;
+    background: #ffffff;
+}
+
+.admin-dashboard-pagination {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.admin-dashboard-page-btn {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #4a5568;
+    background: #edf2f7;
+    border: none;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.admin-dashboard-page-btn:hover {
+    background: #e2e8f0;
+}
+
+.admin-dashboard-page-btn.active {
+    background: #2b6cb0;
+    color: #ffffff;
+}
+
+@media (max-width: 768px) {
+    .admin-dashboard-container {
+        flex-direction: column;
+    }
+
+    .admin-dashboard-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 16px;
+    }
+
+    .admin-dashboard-tabs {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .admin-dashboard-tab-btn {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+    }
+
+    .admin-dashboard-content {
+        padding: 16px;
+    }
+
+    .admin-dashboard-tab-content {
+        padding: 16px;
+    }
+
+    .admin-dashboard-search input {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-dashboard-table-container {
+        overflow-x: auto;
+    }
+
+    .admin-dashboard-table th,
+    .admin-dashboard-table td {
+        font-size: 0.8rem;
+        padding: 8px;
+    }
+
+    .admin-dashboard-table .edit-btn,
+    .admin-dashboard-table .delete-btn {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+}

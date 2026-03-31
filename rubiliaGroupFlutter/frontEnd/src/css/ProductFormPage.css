@@ -1,0 +1,251 @@
+/* Product Form Page Styles */
+.product-form-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: #f4f7fa;
+}
+
+.product-form-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 2rem;
+    background: linear-gradient(90deg, #ffca28, #ffb300);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    border-left: 4px solid #e91e63;
+    padding-left: 10px;
+}
+
+.product-form-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    padding: 2rem;
+}
+
+.product-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.product-form-label {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+    display: block;
+    font-size: 1rem;
+}
+
+.product-form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #374151;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+}
+
+.product-form-control:focus {
+    outline: none;
+    border-color: #e91e63;
+    background-color: #fff;
+    box-shadow: 0 0 8px rgba(233, 30, 99, 0.2);
+}
+
+.product-form-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.product-form-checkbox-label {
+    font-size: 0.95rem;
+    color: #333;
+}
+
+.product-form-discount-text {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.product-form-error {
+    color: #e91e63;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.product-form-image-section {
+    margin-top: 1rem;
+}
+
+.product-form-image-section-title {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.product-form-image-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.product-form-image-item {
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.product-form-image-item:hover {
+    transform: scale(1.05);
+}
+
+.product-form-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.product-form-image-remove-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background-color: #e91e63;
+    color: #fff;
+    border: none;
+    padding: 4px 8px;
+    font-size: 0.85rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.product-form-image-remove-btn:hover {
+    background-color: #d81b60;
+}
+
+.product-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.product-form-btn-primary {
+    background: linear-gradient(90deg, #ffca28, #ffb300);
+    border: none;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.product-form-btn-primary:hover {
+    background: linear-gradient(90deg, #ffb300, #ffca28);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(255, 202, 40, 0.3);
+}
+
+.product-form-btn-secondary {
+    background-color: #6b7280;
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.product-form-btn-secondary:hover {
+    background-color: #4b5563;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Tiptap Editor */
+.product-form-tiptap-editor {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    min-height: 350px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.3s ease;
+}
+
+.product-form-tiptap-editor:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.product-form-tiptap-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.product-form-tiptap-toolbar button {
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.product-form-tiptap-toolbar button:hover {
+    background-color: #e5e7eb;
+    transform: translateY(-1px);
+}
+
+.product-form-tiptap-toolbar button.is-active {
+    background-color: #e91e63;
+    color: #fff;
+    border-color: #e91e63;
+}
+
+.product-form-tiptap-select {
+    padding: 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    background-color: #fff;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.product-form-tiptap-editor .ProseMirror {
+    padding: 15px;
+    min-height: 350px;
+    outline: none;
+    color: #374151;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.product-form-tiptap-editor .ProseMirror p {
+    margin: 0 0 12px 0;
+}
+
+.product-form-tiptap-editor .ProseMirror img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 12px 0;
+    border-radius: 4px;
+}

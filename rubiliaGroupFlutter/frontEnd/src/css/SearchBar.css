@@ -1,0 +1,103 @@
+/* Search form */
+.search-form {
+    width: 100%;
+    max-width: 600px; /* Tăng chiều rộng để nổi bật */
+    position: relative;
+    margin: 0 auto;
+}
+
+.search-input {
+    border-radius: 25px; /* Bo tròn góc hơn */
+    border: 1px solid #ced4da;
+    padding: 12px 50px 12px 20px; /* Tăng padding để ô tìm kiếm lớn hơn */
+    font-size: 16px;
+    font-family: 'Inter', sans-serif;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Thêm bóng đổ nhẹ */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.search-input:focus {
+    border-color: #8B4513;
+    box-shadow: 0 0 8px rgba(139, 69, 19, 0.3);
+    outline: none;
+}
+
+.btn-search {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: #8B4513;
+    font-size: 18px; /* Tăng kích thước biểu tượng */
+    padding: 0;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-search:hover {
+    color: #A0522D;
+    transform: scale(1.1);
+}
+
+/* Search results dropdown */
+.search-results-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #FFFFFF;
+    border-radius: 12px;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1000;
+    margin-top: 8px; /* Tăng khoảng cách với ô tìm kiếm */
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #1F2937;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.search-result-item:hover {
+    background: #F5F7FA;
+    transform: scale(1.02);
+}
+
+.search-result-img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    border-radius: 8px;
+    margin-right: 15px;
+    border: 1px solid #E5E7EB;
+}
+
+.search-result-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.search-result-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1F2937;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 350px; /* Tăng chiều rộng tối đa để hiển thị tên dài hơn */
+}
+
+.search-result-price {
+    font-size: 14px;
+    font-weight: bold;
+    color: #C91F37; /* Đồng bộ màu đỏ với ProductDetailPage */
+    margin-top: 5px;
+}
