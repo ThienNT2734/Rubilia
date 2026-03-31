@@ -8,13 +8,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.servlet.view.RedirectView;
 import java.util.HashMap;
 import java.util.Map;
 
-@RestController
+@Controller
 @RequestMapping("/api/momo")
 public class MomoController {
 
@@ -27,6 +29,7 @@ public class MomoController {
     private OrderService orderService;
 
     @PostMapping("/create")
+    @ResponseBody
     public ResponseEntity<?> createPayment(@RequestBody MomoPaymentRequest request, HttpServletRequest httpRequest) {
         String orderId = request.getOrderId();
         if (orderId == null || orderId.isEmpty() || request.getAmount() == null) {
@@ -45,9 +48,11 @@ public class MomoController {
                         }
 
                         String ipAddress = httpRequest.getRemoteAddr();
-                        String paymentUrl = momoService.createPaymentUrl(orderId, request.getAmount().longValue(), ipAddress);
+                        String paymentType = request.getPaymentType();
+                        String paymentUrl = momoService.createPaymentUrl(orderId, request.getAmount().longValue(), paymentType, ipAddress);
                         Map<String, String> response = new HashMap<>();
                         response.put("paymentUrl", paymentUrl);
+                        response.put("paymentType", paymentType == null ? "captureWallet" : paymentType);
                         return ResponseEntity.ok(response);
                     })
                     .orElseGet(() -> (ResponseEntity<?>) ResponseEntity.badRequest().body("Đơn hàng không tồn tại."));
@@ -62,12 +67,12 @@ public class MomoController {
     }
 
     @GetMapping("/return")
-    public ResponseEntity<?> momoReturn(@RequestParam Map<String, String> queryParams) {
+    public RedirectView momoReturn(@RequestParam Map<String, String> queryParams) {
         String orderId = queryParams.get("orderId");
         String resultCode = queryParams.get("resultCode");
 
         if (orderId == null || orderId.isEmpty()) {
-            return ResponseEntity.badRequest().body("Missing orderId.");
+            return new RedirectView("http://localhost:3000/checkout?status=failed&message=Missing+orderId");
         }
 
         return orderService.findById(orderId)
@@ -75,7 +80,7 @@ public class MomoController {
                     String finalStatus;
                     if ("0".equals(resultCode)) {
                         if ("PAID".equalsIgnoreCase(order.getPaymentStatus())) {
-                            return (ResponseEntity<?>) ResponseEntity.ok(Map.of("message", "Đơn hàng đã được thanh toán trước đó.", "orderId", order.getId()));
+                            return new RedirectView("http://localhost:3000/checkout?status=success&orderId=" + order.getId() + "&message=Đơn+hàng+đã+được+thanh+toán+trước+đó");
                         }
                         finalStatus = "PAID";
                         orderService.updatePaymentStatus(orderId, finalStatus);
@@ -83,12 +88,8 @@ public class MomoController {
                         finalStatus = "FAILED";
                         orderService.updatePaymentStatus(orderId, finalStatus);
                     }
-                    return ResponseEntity.ok(Map.of(
-                            "orderId", order.getId(),
-                            "paymentStatus", finalStatus,
-                            "resultCode", resultCode
-                    ));
+                    return new RedirectView("http://localhost:3000/checkout?status=" + ("PAID".equals(finalStatus) ? "success" : "failed") + "&orderId=" + order.getId());
                 })
-                .orElseGet(() -> (ResponseEntity<?>) ResponseEntity.badRequest().body("Đơn hàng không tồn tại."));
+                .orElseGet(() -> new RedirectView("http://localhost:3000/checkout?status=failed&message=Đơn+hàng+không+tồn+tại"));
     }
 }

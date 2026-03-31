@@ -6,13 +6,15 @@ import com.rubilia.exercise201.service.OrderService;
 import com.rubilia.exercise201.service.VnPayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.servlet.view.RedirectView;
 import java.util.HashMap;
 import java.util.Map;
 
-@RestController
+@Controller
 @RequestMapping("/api/vnpay")
 public class VnPayController {
 
@@ -23,6 +25,7 @@ public class VnPayController {
     private OrderService orderService;
 
     @PostMapping("/create")
+    @ResponseBody
     public ResponseEntity<?> createPayment(@RequestBody VnPayPaymentRequest request, HttpServletRequest httpRequest) {
         String orderId = request.getOrderId();
         if (orderId == null || orderId.isEmpty() || request.getAmount() == null) {
@@ -53,17 +56,17 @@ public class VnPayController {
     }
 
     @GetMapping("/return")
-    public ResponseEntity<?> vnpayReturn(@RequestParam Map<String, String> queryParams) {
+    public RedirectView vnpayReturn(@RequestParam Map<String, String> queryParams) {
         boolean valid = vnPayService.validateSecureHash(queryParams);
         if (!valid) {
-            return ResponseEntity.badRequest().body("Invalid VNPAY signature.");
+            return new RedirectView("http://localhost:3000/checkout?status=failed&message=Invalid+Signature");
         }
 
         String responseCode = queryParams.get("vnp_ResponseCode");
         String txnRef = queryParams.get("vnp_TxnRef");
         String amountStr = queryParams.get("vnp_Amount");
         if (txnRef == null || txnRef.isEmpty()) {
-            return ResponseEntity.badRequest().body("Missing vnp_TxnRef.");
+            return new RedirectView("http://localhost:3000/checkout?status=failed&message=Missing+vnp_TxnRef");
         }
 
         return orderService.findById(txnRef)
@@ -73,17 +76,17 @@ public class VnPayController {
                     try {
                         returnedAmount = Long.parseLong(amountStr);
                     } catch (NumberFormatException e) {
-                        return ResponseEntity.badRequest().body("Invalid amount returned from VNPAY.");
+                        return new RedirectView("http://localhost:3000/checkout?status=failed&orderId=" + order.getId() + "&message=Invalid+amount+returned+from+VNPAY");
                     }
 
                     if (returnedAmount != expectedAmount) {
-                        return ResponseEntity.badRequest().body("Số tiền thanh toán không khớp.");
+                        return new RedirectView("http://localhost:3000/checkout?status=failed&orderId=" + order.getId() + "&message=Số+tiền+thanh+toán+không+khớp");
                     }
 
                     String finalStatus;
                     if ("00".equals(responseCode)) {
                         if ("PAID".equalsIgnoreCase(order.getPaymentStatus())) {
-                            return ResponseEntity.ok(Map.of("message", "Đơn hàng đã được thanh toán trước đó.", "orderId", order.getId()));
+                            return new RedirectView("http://localhost:3000/checkout?status=success&orderId=" + order.getId() + "&message=Đơn+hàng+đã+được+thanh+toán+trước+đó");
                         }
                         finalStatus = "PAID";
                         orderService.updatePaymentStatus(txnRef, finalStatus);
@@ -91,13 +94,8 @@ public class VnPayController {
                         finalStatus = "FAILED";
                         orderService.updatePaymentStatus(txnRef, finalStatus);
                     }
-
-                    return ResponseEntity.ok(Map.of(
-                            "orderId", order.getId(),
-                            "paymentStatus", finalStatus,
-                            "vnpResponseCode", responseCode
-                    ));
+                    return new RedirectView("http://localhost:3000/checkout?status=" + ("PAID".equals(finalStatus) ? "success" : "failed") + "&orderId=" + order.getId());
                 })
-                .orElseGet(() -> ResponseEntity.badRequest().body("Đơn hàng không tồn tại."));
+                .orElseGet(() -> new RedirectView("http://localhost:3000/checkout?status=failed&message=Đơn+hàng+không+tồn+tại"));
     }
 }

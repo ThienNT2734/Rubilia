@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { getCart, clearCart } from '../utils/cartUtils';
 import QRCode from 'react-qr-code';
 import '../css/Checkout.css';
@@ -19,15 +19,32 @@ const Checkout = () => {
   const [paymentInfo, setPaymentInfo] = useState(null);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const status = params.get('status');
+    if (status) {
+      // This is a return from a payment gateway
+      if (status === 'success') {
+        setSuccess(true);
+        clearCart();
+        setTimeout(() => navigate('/'), 5000);
+      } else {
+        const message = params.get('message') || 'Lỗi không xác định.';
+        setError(`Thanh toán thất bại. Lý do: ${decodeURIComponent(message.replace(/\+/g, ' '))}`);
+      }
+      // Clean up the URL
+      navigate('/checkout', { replace: true });
+    }
+
     const items = getCart().map(item => ({
       productId: item.id,
       quantity: item.quantity,
       price: item.salePrice,
     }));
     setCartItems(items);
-  }, []);
+  }, [location.search, navigate]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -63,15 +80,16 @@ const Checkout = () => {
       const orderResponse = await axios.post('http://localhost:8080/api/orders', orderData);
       if (orderResponse.status === 200) {
         const orderId = orderResponse.data?.orderId || null;
-        if (formData.paymentMethod === 'vnpay_web' || formData.paymentMethod === 'vnpay_qr' || formData.paymentMethod === 'momo') {
+        if (formData.paymentMethod === 'vnpay_web' || formData.paymentMethod === 'vnpay_qr' || formData.paymentMethod.startsWith('momo')) {
           if (!orderId) {
             throw new Error('Không nhận được mã đơn hàng từ backend');
           }
 
-          if (formData.paymentMethod === 'momo') {
+          if (formData.paymentMethod.startsWith('momo')) {
             const paymentResponse = await axios.post('http://localhost:8080/api/momo/create', {
               orderId,
               amount: orderData.totalPrice,
+              paymentType: formData.paymentMethod,
             });
             const paymentUrl = paymentResponse.data?.paymentUrl;
             if (!paymentUrl) {
@@ -195,10 +213,10 @@ const Checkout = () => {
                 onChange={handleChange}
               >
                 <option value="cod">Thanh toán khi nhận hàng</option>
-                <option value="bank">Chuyển khoản ngân hàng</option>
                 <option value="vnpay_web">VNPay Web</option>
                 <option value="vnpay_qr">VNPay QR</option>
-                <option value="momo">MoMo</option>
+                <option value="momo_wallet">MoMo - ví/MoMo QR</option>
+                <option value="momo_card">MoMo - thẻ/ATM</option>
               </select>
             </div>
             <button type="submit">Đặt Hàng</button>

@@ -45,7 +45,7 @@ public class MomoServiceImpl implements MomoService {
     }
 
     @Override
-    public String createPaymentUrl(String orderId, long amount, String ipAddress) {
+    public String createPaymentUrl(String orderId, long amount, String paymentType, String ipAddress) {
         if (partnerCode == null || partnerCode.isBlank() || accessKey == null || accessKey.isBlank() || secretKey == null || secretKey.isBlank()) {
             throw new IllegalStateException("MoMo configuration missing partner code, access key, or secret key.");
         }
@@ -55,7 +55,7 @@ public class MomoServiceImpl implements MomoService {
             String orderInfo = "Thanh toan don hang " + orderId;
             String amountString = String.valueOf(amount);
             String extraData = "";
-            String requestType = "captureWallet";
+            String requestType = determineRequestType(paymentType);
 
             String rawSignature = "accessKey=" + accessKey +
                     "&amount=" + amountString +
@@ -103,6 +103,16 @@ public class MomoServiceImpl implements MomoService {
         } catch (Exception e) {
             throw new RuntimeException("Unable to create MoMo payment URL: " + e.getMessage(), e);
         }
+    }
+
+    private String determineRequestType(String paymentType) {
+        if (paymentType == null || paymentType.isBlank() || "momo".equalsIgnoreCase(paymentType) || "momo_wallet".equalsIgnoreCase(paymentType)) {
+            return "captureWallet";
+        }
+        if ("momo_card".equalsIgnoreCase(paymentType) || "momo_atm".equalsIgnoreCase(paymentType) || "payWithATM".equalsIgnoreCase(paymentType)) {
+            return "payWithATM";
+        }
+        return paymentType;
     }
 
     private String hmacSHA256(String key, String data) {
