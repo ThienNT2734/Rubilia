@@ -63,10 +63,25 @@ const Checkout = () => {
       const orderResponse = await axios.post('http://localhost:8080/api/orders', orderData);
       if (orderResponse.status === 200) {
         const orderId = orderResponse.data?.orderId || null;
-        if (formData.paymentMethod === 'vnpay_web' || formData.paymentMethod === 'vnpay_qr') {
+        if (formData.paymentMethod === 'vnpay_web' || formData.paymentMethod === 'vnpay_qr' || formData.paymentMethod === 'momo') {
           if (!orderId) {
             throw new Error('Không nhận được mã đơn hàng từ backend');
           }
+
+          if (formData.paymentMethod === 'momo') {
+            const paymentResponse = await axios.post('http://localhost:8080/api/momo/create', {
+              orderId,
+              amount: orderData.totalPrice,
+            });
+            const paymentUrl = paymentResponse.data?.paymentUrl;
+            if (!paymentUrl) {
+              throw new Error('Không nhận được đường dẫn thanh toán MoMo');
+            }
+            clearCart();
+            window.location.href = paymentUrl;
+            return;
+          }
+
           const payType = formData.paymentMethod === 'vnpay_qr' ? 'QR' : 'WEB';
           const paymentResponse = await axios.post('http://localhost:8080/api/vnpay/create', {
             orderId,
@@ -102,7 +117,8 @@ const Checkout = () => {
         }, 5000);
       }
     } catch (err) {
-      setError(err.response?.data || err.message || 'Lỗi khi đặt hàng');
+      const errorMessage = err.response?.data?.message || err.response?.data || err.message || 'Lỗi khi đặt hàng';
+      setError(typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage));
       console.error(err);
     } finally {
       setIsProcessingPayment(false);
@@ -182,6 +198,7 @@ const Checkout = () => {
                 <option value="bank">Chuyển khoản ngân hàng</option>
                 <option value="vnpay_web">VNPay Web</option>
                 <option value="vnpay_qr">VNPay QR</option>
+                <option value="momo">MoMo</option>
               </select>
             </div>
             <button type="submit">Đặt Hàng</button>
