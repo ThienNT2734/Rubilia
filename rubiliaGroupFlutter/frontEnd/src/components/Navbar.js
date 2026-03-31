@@ -92,7 +92,7 @@ const Navbar = () => {
 
         const fetchSearchResults = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/products/search?keyword=${encodeURIComponent(searchQuery)}`);
+                const response = await axios.get(`/api/products/search?keyword=${encodeURIComponent(searchQuery)}`);
                 const results = response.data.slice(0, 5);
                 setSearchResults(results);
                 setShowSearchResults(true);
@@ -141,7 +141,7 @@ const Navbar = () => {
         setSuccess('');
         try {
             if (authMode === 'login') {
-                const response = await axios.post('http://localhost:8080/api/customers/login', {
+                const response = await axios.post('/api/customers/login', {
                     user_name: formData.email,
                     password_hash: formData.password
                 });
@@ -162,7 +162,7 @@ const Navbar = () => {
                     setError('Vui lòng nhập họ!');
                     return;
                 }
-                const response = await axios.post('http://localhost:8080/api/customers/register', {
+                const response = await axios.post('/api/customers/register', {
                     user_name: formData.email,
                     password_hash: formData.password,
                     first_name: formData.first_name,
@@ -177,7 +177,7 @@ const Navbar = () => {
                 alert('Đăng ký OAuth2 thành công!');
                 setIsLoggedIn(true);
             } else if (authMode === 'forgot') {
-                const response = await axios.post('http://localhost:8080/api/customers/forgot-password', {
+                const response = await axios.post('/api/customers/forgot-password', {
                     email: formData.email
                 });
                 setSuccess('Email đặt lại mật khẩu đã được gửi! Vui lòng kiểm tra hộp thư của bạn.');
@@ -289,7 +289,7 @@ const Navbar = () => {
                                             onClick={() => setShowSearchResults(false)}
                                         >
                                             <img
-                                                src={product.galleries?.[0]?.image ? `http://localhost:8080${product.galleries[0].image}` : 'https://via.placeholder.com/50'}
+                                                src={product.galleries?.[0]?.image ? product.galleries[0].image : 'https://via.placeholder.com/50'}
                                                 alt={product.productName}
                                                 className="search-result-img"
                                                 onError={(e) => {

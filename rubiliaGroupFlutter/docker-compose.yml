@@ -1,0 +1,72 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: rubilia-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: your_strong_root_password # <-- THAY ĐỔI MẬT KHẨU BẢO MẬT HƠN
+      MYSQL_DATABASE: rubiliadb
+      MYSQL_USER: rubiliauser
+      MYSQL_PASSWORD: your_strong_user_password # <-- THAY ĐỔI MẬT KHẨU BẢO MẬT HƠN
+    ports:
+      # Ánh xạ cổng 3307 trên máy host vào cổng 3306 của container
+      # để tránh xung đột nếu bạn đã cài MySQL trên máy
+      - "3307:3306"
+    volumes:
+      # Gắn volume để lưu trữ dữ liệu MySQL, đảm bảo dữ liệu không bị mất khi container bị xóa
+      - mysql-data:/var/lib/mysql
+      # Gắn file .sql để khởi tạo cơ sở dữ liệu khi container được tạo lần đầu
+      - ./database/RubiliaDatabase20250611.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./backEnd
+      dockerfile: Dockerfile
+    container_name: rubilia-backend
+    restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy # Chỉ khởi động backend khi mysql đã sẵn sàng
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/rubiliadb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=rubiliauser
+      - SPRING_DATASOURCE_PASSWORD=your_strong_user_password # <-- SỬ DỤNG CÙNG MẬT KHẨU Ở TRÊN
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      # Cấu hình thư mục uploads cho backend
+      - uploads.directory=/app/uploads
+    volumes:
+      - uploads-data:/app/uploads
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontEnd
+      dockerfile: Dockerfile
+    container_name: rubilia-frontend
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      # Mount shared volume để Nginx có thể phục vụ các file đã upload
+      - uploads-data:/usr/share/nginx/html/uploads
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+volumes:
+  mysql-data:
+  uploads-data: # Volume để lưu trữ file upload
+
+networks:
+  app-network:
+    driver: bridge
