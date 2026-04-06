@@ -30,7 +30,7 @@ const UserProfile = () => {
         }
 
         // Kiểm tra xem tài khoản có phải là OAuth2 không
-        axios.get(`http://localhost:8080/api/customers/${customer.id}/is-oauth2`)
+        axios.get(`https://rubilia.store/api/customers/${customer.id}/is-oauth2`)
             .then(response => {
                 setIsOAuth2(response.data.isOAuth2);
                 // Cập nhật localStorage
@@ -68,7 +68,7 @@ const UserProfile = () => {
                 phone_number: userInfo.phone,
                 address: userInfo.address
             });
-            const response = await axios.put(`http://localhost:8080/api/customers/${customer.id}`, {
+            const response = await axios.put(`https://rubilia.store/api/customers/${customer.id}`, {
                 first_name: firstName,
                 last_name: lastName,
                 email: userInfo.email,
@@ -102,7 +102,7 @@ const UserProfile = () => {
                 newPassword: passwordData.newPassword,
                 confirmPassword: passwordData.confirmPassword
             });
-            const response = await axios.put(`http://localhost:8080/api/customers/${customer.id}/password`, {
+            const response = await axios.put(`https://rubilia.store/api/customers/${customer.id}/password`, {
                 currentPassword: isOAuth2 ? '' : passwordData.currentPassword, // Không gửi currentPassword nếu là OAuth2
                 newPassword: passwordData.newPassword,
                 confirmPassword: passwordData.confirmPassword

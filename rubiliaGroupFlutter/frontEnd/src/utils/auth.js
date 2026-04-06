@@ -25,7 +25,7 @@ export const login = (staffData) => {
 // Hàm đăng nhập cho khách hàng (customer)
 export const loginCustomer = async (email, password) => {
     try {
-        const response = await axios.post('http://localhost:8080/api/customers/login', { user_name: email, password_hash: password });
+        const response = await axios.post('https://rubilia.store/api/customers/login', { user_name: email, password_hash: password });
         const customer = response.data;
         if (!customer.email) {
             console.error('Customer data missing email:', customer);
@@ -48,13 +48,13 @@ export const loginGoogle = async () => {
         const height = 600;
         const left = (window.screen.width - width) / 2;
         const top = (window.screen.height - height) / 2;
-        const url = `http://localhost:8080/oauth2/authorization/google?redirect_uri=http://localhost:8080/login/oauth2/code/google`;
+        const url = `https://rubilia.store/oauth2/authorization/google?redirect_uri=http://rubilia.store/login/oauth2/code/google`;
         window.open(url, 'oauth2', `width=${width},height=${height},top=${top},left=${left}`);
 
         // Trả về một Promise để chờ kết quả từ popup
         return new Promise((resolve, reject) => {
             const handleMessage = (event) => {
-                if (event.origin !== 'http://localhost:8080') return;
+                if (event.origin !== 'https://rubilia.store') return;
                 const { status, data, error } = event.data;
                 if (status === 'success') {
                     if (!data.email) {
@@ -83,7 +83,7 @@ export const loginGoogle = async () => {
 // Hàm đăng ký OAuth2 khi thiếu thông tin
 export const registerOAuth2 = async (email, firstName, lastName) => {
     try {
-        const response = await axios.post('http://localhost:8080/api/customers/oauth2/register', {
+        const response = await axios.post('https://rubilia.store/api/customers/oauth2/register', {
             email,
             firstName,
             lastName
