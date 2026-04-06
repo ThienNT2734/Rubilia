@@ -95,7 +95,6 @@ const Checkout = () => {
             if (!paymentUrl) {
               throw new Error('Không nhận được đường dẫn thanh toán MoMo');
             }
-            clearCart();
             window.location.href = paymentUrl;
             return;
           }
@@ -118,12 +117,10 @@ const Checkout = () => {
           });
 
           if (formData.paymentMethod === 'vnpay_web' && paymentUrl) {
-            clearCart();
             window.location.href = paymentUrl;
             return;
           }
 
-          clearCart();
           setSuccess(formData.paymentMethod !== 'vnpay_qr');
           return;
         }

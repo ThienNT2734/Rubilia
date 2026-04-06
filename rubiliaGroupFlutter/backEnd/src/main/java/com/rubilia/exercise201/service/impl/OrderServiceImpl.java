@@ -150,7 +150,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public ResponseEntity<?> processCheckout(Object orderData) {
         logger.info("Processing new checkout");
         try {
@@ -302,10 +302,34 @@ public class OrderServiceImpl implements OrderService {
         logger.info("Updating payment status for order {} to {}", orderId, paymentStatus);
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
+
+        // Ngăn chặn việc cập nhật lại nếu trạng thái đã giống nhau (tránh cộng/trừ tồn kho nhiều lần)
+        if (paymentStatus.equalsIgnoreCase(order.getPaymentStatus())) {
+            return order;
+        }
+
         order.setPaymentStatus(paymentStatus);
 
         if ("PAID".equalsIgnoreCase(paymentStatus)) {
             orderStatusRepository.findByStatusName("Paid")
+                    .ifPresent(order::setOrderStatus);
+        } else if ("FAILED".equalsIgnoreCase(paymentStatus)) {
+            // Hoàn lại số lượng sản phẩm vào kho khi thanh toán thất bại
+            List<OrderItem> orderItems = orderItemRepository.findByOrder(order);
+            for (OrderItem item : orderItems) {
+                Product product = item.getProduct();
+                if (product != null) {
+                    product.setQuantity(product.getQuantity() + item.getQuantity());
+                    productRepository.save(product);
+                }
+            }
+            // Hoàn lại lượt sử dụng mã giảm giá
+            if (order.getCoupon() != null) {
+                Coupon coupon = order.getCoupon();
+                coupon.setTimesUsed(coupon.getTimesUsed().subtract(BigDecimal.ONE));
+                couponRepository.save(coupon);
+            }
+            orderStatusRepository.findByStatusName("Cancelled")
                     .ifPresent(order::setOrderStatus);
         }
 

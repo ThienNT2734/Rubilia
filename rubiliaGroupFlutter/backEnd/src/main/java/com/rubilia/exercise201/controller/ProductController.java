@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,10 +48,14 @@ public class ProductController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> createProduct(
-            @RequestBody Map<String, Object> productData, // Sửa để nhận Map thay vì Object
-            @RequestParam UUID staffId) {
+            @RequestBody Map<String, Object> productData,
+            Authentication authentication) {
         try {
+            // Lấy staffId từ principal đã xác thực
+            StaffAccount staff = (StaffAccount) authentication.getPrincipal();
+            UUID staffId = staff.getId();
             // Chuyển đổi Map thành JsonNode
             JsonNode productJson = objectMapper.convertValue(productData, JsonNode.class);
             return productService.save(productJson, staffId);
@@ -59,11 +65,14 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateProduct(
             @PathVariable UUID id,
             @RequestBody Map<String, Object> productData,
-            @RequestParam UUID staffId) {
+            Authentication authentication) {
         try {
+            StaffAccount staff = (StaffAccount) authentication.getPrincipal();
+            UUID staffId = staff.getId();
             JsonNode jsonNode = objectMapper.convertValue(productData, JsonNode.class);
             return productService.update(id, jsonNode, staffId);
         } catch (Exception e) {
@@ -72,6 +81,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteProduct(@PathVariable UUID id) {
         return productService.deleteProduct(id);
     }
