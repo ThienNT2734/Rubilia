@@ -20,7 +20,7 @@ const SaleForm = () => {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        axios.get('http://localhost:8080/api/products')
+        axios.get('https://rubilia.store/api/products')
             .then(response => {
                 setProducts(response.data);
             })
@@ -50,10 +50,10 @@ const SaleForm = () => {
             };
 
             if (editingSale) {
-                await axios.put(`http://localhost:8080/api/sales/${editingSale.id}?staffId=${staffId}`, saleData);
+                await axios.put(`https://rubilia.store/api/sales/${editingSale.id}?staffId=${staffId}`, saleData);
                 alert('Sửa Flash Sale thành công!');
             } else {
-                await axios.post(`http://localhost:8080/api/sales?staffId=${staffId}`, saleData);
+                await axios.post(`https://rubilia.store/api/sales?staffId=${staffId}`, saleData);
                 alert('Thêm Flash Sale thành công!');
             }
 

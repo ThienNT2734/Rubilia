@@ -25,11 +25,11 @@ const ProductDetailPage = () => {
     const [ratingValue, setRatingValue] = useState(0);
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/products/${id}`)
+        axios.get(`https://rubilia.store/api/products/${id}`)
             .then(response => {
                 setProduct(response.data);
 
-                axios.get('http://localhost:8080/api/products')
+                axios.get('https://rubilia.store/api/products')
                     .then(res => {
                         const allProducts = res.data;
                         const keyword = response.data.productName.toLowerCase().split(' ')[0];
@@ -42,10 +42,10 @@ const ProductDetailPage = () => {
                         setSuggestedProducts(filteredProducts);
                     });
 
-                axios.get(`http://localhost:8080/api/comments/product/${id}`)
+                axios.get(`https://rubilia.store/api/comments/product/${id}`)
                     .then(res => setComments(res.data));
 
-                axios.get(`http://localhost:8080/api/ratings/product/${id}`)
+                axios.get(`https://rubilia.store/api/ratings/product/${id}`)
                     .then(res => setRatings(res.data));
             })
             .catch(error => {
@@ -127,12 +127,12 @@ const ProductDetailPage = () => {
         try {
             const email = getCurrentUserEmail();
             const commentData = { content: commentContent, productId: id };
-            await axios.post('http://localhost:8080/api/comments', commentData, {
+            await axios.post('https://rubilia.store/api/comments', commentData, {
                 params: { email }
             });
             showNotification('Bình luận đã được gửi và đang chờ duyệt.');
             setCommentContent('');
-            const res = await axios.get(`http://localhost:8080/api/comments/product/${id}`);
+            const res = await axios.get(`https://rubilia.store/api/comments/product/${id}`);
             setComments(res.data);
         } catch (err) {
             showNotification('Lỗi khi gửi bình luận.');
@@ -148,12 +148,12 @@ const ProductDetailPage = () => {
         try {
             const email = getCurrentUserEmail();
             const ratingData = { rating: parseFloat(rating), productId: id };
-            await axios.post('http://localhost:8080/api/ratings', ratingData, {
+            await axios.post('https://rubilia.store/api/ratings', ratingData, {
                 params: { email }
             });
             showNotification('Đánh giá đã được gửi và đang chờ duyệt.');
             setRatingValue(0);
-            const res = await axios.get(`http://localhost:8080/api/ratings/product/${id}`);
+            const res = await axios.get(`https://rubilia.store/api/ratings/product/${id}`);
             setRatings(res.data);
         } catch (err) {
             showNotification('Lỗi khi gửi đánh giá.');
@@ -197,7 +197,7 @@ const ProductDetailPage = () => {
                     <div className="image-gallery">
                         {product.galleries && product.galleries.length > 0 ? (
                             <img
-                                src={`http://localhost:8080${product.galleries[currentImageIndex].image}`}
+                                src={`https://rubilia.store${product.galleries[currentImageIndex].image}`}
                                 alt={product.productName || 'Sản phẩm'}
                                 className="product-detail-img"
                                 loading="lazy"
@@ -236,7 +236,7 @@ const ProductDetailPage = () => {
                             {product.galleries.map((img, index) => (
                                 <img
                                     key={index}
-                                    src={`http://localhost:8080${img.image}`}
+                                    src={`https://rubilia.store${img.image}`}
                                     alt={`Thumbnail ${index + 1}`}
                                     className={`thumbnail ${index === currentImageIndex ? 'active' : ''}`}
                                     onClick={() => handleThumbnailClick(index)}

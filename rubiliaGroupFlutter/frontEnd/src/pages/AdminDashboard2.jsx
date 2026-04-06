@@ -32,7 +32,7 @@ const AdminDashboard2 = () => {
     };
 
     const fetchComments = async () => {
-        const response = await axios.get('http://localhost:8080/api/comments/all');
+        const response = await axios.get('https://rubilia.store/api/comments/all');
         if (response.status !== 200) {
             throw new Error('Phản hồi không thành công: ' + response.status);
         }
@@ -40,7 +40,7 @@ const AdminDashboard2 = () => {
     };
 
     const fetchRatings = async () => {
-        const response = await axios.get('http://localhost:8080/api/ratings/all');
+        const response = await axios.get('https://rubilia.store/api/ratings/all');
         if (response.status !== 200) {
             throw new Error('Phản hồi không thành công: ' + response.status);
         }
@@ -63,7 +63,7 @@ const AdminDashboard2 = () => {
     const ratings = Array.isArray(ratingsData) ? ratingsData : [];
 
     const approveCommentMutation = useMutation({
-        mutationFn: (commentId) => axios.put(`http://localhost:8080/api/comments/${commentId}/approve`),
+        mutationFn: (commentId) => axios.put(`https://rubilia.store/api/comments/${commentId}/approve`),
         onSuccess: () => {
             showToast('Duyệt bình luận thành công!', 'success');
             queryClient.invalidateQueries(['comments']);
@@ -75,7 +75,7 @@ const AdminDashboard2 = () => {
     });
 
     const deleteCommentMutation = useMutation({
-        mutationFn: (commentId) => axios.delete(`http://localhost:8080/api/comments/${commentId}`),
+        mutationFn: (commentId) => axios.delete(`https://rubilia.store/api/comments/${commentId}`),
         onSuccess: () => {
             showToast('Xóa bình luận thành công!', 'success');
             queryClient.invalidateQueries(['comments']);
@@ -87,7 +87,7 @@ const AdminDashboard2 = () => {
     });
 
     const approveRatingMutation = useMutation({
-        mutationFn: (ratingId) => axios.put(`http://localhost:8080/api/ratings/${ratingId}/approve`),
+        mutationFn: (ratingId) => axios.put(`https://rubilia.store/api/ratings/${ratingId}/approve`),
         onSuccess: () => {
             showToast('Duyệt đánh giá thành công!', 'success');
             queryClient.invalidateQueries(['ratings']);
@@ -99,7 +99,7 @@ const AdminDashboard2 = () => {
     });
 
     const deleteRatingMutation = useMutation({
-        mutationFn: (ratingId) => axios.delete(`http://localhost:8080/api/ratings/${ratingId}`),
+        mutationFn: (ratingId) => axios.delete(`https://rubilia.store/api/ratings/${ratingId}`),
         onSuccess: () => {
             showToast('Xóa đánh giá thành công!', 'success');
             queryClient.invalidateQueries(['ratings']);

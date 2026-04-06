@@ -7,7 +7,7 @@ const FlashSalePage = () => {
     const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
     useEffect(() => {
-        axios.get('http://localhost:8080/api/sales')
+        axios.get('https://rubilia.store/api/sales')
             .then(response => {
                 console.log('Flash Sale products:', response.data);
                 setFlashSaleProducts(response.data);

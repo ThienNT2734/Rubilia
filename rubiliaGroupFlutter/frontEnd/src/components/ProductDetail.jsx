@@ -4,7 +4,7 @@ const ProductDetail = ({ product }) => {
     if (!product) return <div>Sản phẩm không tồn tại</div>;
 
     const imageUrl = product.galleries && product.galleries[0]?.image
-        ? `http://rubilia.store${product.galleries[0].image}`
+        ? `https://rubilia.store${product.galleries[0].image}`
         : 'https://via.placeholder.com/150';
 
     return (

@@ -13,13 +13,13 @@ const BlogDetailPage = () => {
     useEffect(() => {
         const fetchPost = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/review-posts/${id}`);
+                const response = await axios.get(`https://rubilia.store/api/review-posts/${id}`);
                 setPost(response.data);
 
                 // Lấy thông tin tác giả nếu createdBy tồn tại
                 if (response.data.createdBy) {
                     try {
-                        const authorResponse = await axios.get(`http://localhost:8080/api/staff/${response.data.createdBy}`);
+                        const authorResponse = await axios.get(`https://rubilia.store/api/staff/${response.data.createdBy}`);
                         setAuthor(authorResponse.data);
                     } catch (authorErr) {
                         console.error('Error fetching author:', authorErr);
@@ -30,7 +30,7 @@ const BlogDetailPage = () => {
                 }
 
                 // Lấy bài viết liên quan
-                const relatedResponse = await axios.get('http://localhost:8080/api/review-posts');
+                const relatedResponse = await axios.get('https://rubilia.store/api/review-posts');
                 const related = relatedResponse.data
                     .filter(p => p.id !== id)
                     .slice(0, 3);

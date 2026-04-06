@@ -22,7 +22,7 @@ const AreaProductsPage = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/products/display-area/${area}`);
+                const response = await axios.get(`https://rubilia.store/api/products/display-area/${area}`);
                 setProducts(response.data); // Bỏ giới hạn 5 sản phẩm
             } catch (err) {
                 console.error(`Error fetching products for ${area}:`, err);
