@@ -19,7 +19,7 @@ const CategoryForm = () => {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        axios.get('http://localhost:8080/api/categories')
+        axios.get('https://rubilia.store/api/categories')
             .then(response => {
                 setCategories(response.data);
             })
@@ -51,10 +51,10 @@ const CategoryForm = () => {
 
             if (editingCategory) {
                 const { createdAt, ...updateData } = categoryData;
-                await axios.put(`http://localhost:8080/api/categories/${editingCategory.id}?staffId=${staffId}`, updateData);
+                await axios.put(`https://rubilia.store/api/categories/${editingCategory.id}?staffId=${staffId}`, updateData);
                 alert('Sửa danh mục thành công!');
             } else {
-                await axios.post(`http://localhost:8080/api/categories?staffId=${staffId}`, categoryData);
+                await axios.post(`https://rubilia.store/api/categories?staffId=${staffId}`, categoryData);
                 alert('Thêm danh mục thành công!');
             }
 

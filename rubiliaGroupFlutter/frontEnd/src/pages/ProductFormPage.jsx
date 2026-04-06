@@ -74,7 +74,7 @@ const ProductFormPage = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/categories');
+                const response = await axios.get('https://rubilia.store/api/categories');
                 setCategories(response.data);
             } catch (err) {
                 console.error('Lỗi lấy danh sách danh mục:', err);
@@ -231,12 +231,12 @@ const ProductFormPage = () => {
             let response;
             if (editMode) {
                 response = await axios.put(
-                    `http://localhost:8080/api/products/${editingProduct.id}?staffId=${staffId}`,
+                    `https://rubilia.store/api/products/${editingProduct.id}?staffId=${staffId}`,
                     productData
                 );
                 setSuccess('Cập nhật sản phẩm thành công!');
             } else {
-                response = await axios.post(`http://localhost:8080/api/products?staffId=${staffId}`, productData);
+                response = await axios.post(`https://rubilia.store/api/products?staffId=${staffId}`, productData);
                 setSuccess('Thêm sản phẩm thành công!');
             }
 
@@ -476,7 +476,7 @@ const ProductFormPage = () => {
                                 {existingImages.map((image, index) => (
                                     <div key={index} className="product-form-image-item">
                                         <img
-                                            src={`http://localhost:8080${image.image}`}
+                                            src={`https://rubilia.store${image.image}`}
                                             alt={`Existing ${index}`}
                                             style={{ width: '100px', margin: '5px' }}
                                             onError={(e) => {

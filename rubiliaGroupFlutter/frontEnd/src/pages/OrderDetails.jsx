@@ -13,10 +13,10 @@ const OrderDetails = () => {
     useEffect(() => {
         const fetchOrderDetails = async () => {
             try {
-                const orderResponse = await axios.get(`http://localhost:8080/api/orders/${orderId}`);
+                const orderResponse = await axios.get(`https://rubilia.store/api/orders/${orderId}`);
                 setOrder(orderResponse.data);
 
-                const itemsResponse = await axios.get(`http://localhost:8080/api/orders/${orderId}/items`);
+                const itemsResponse = await axios.get(`https://rubilia.store/api/orders/${orderId}/items`);
                 setOrderItems(itemsResponse.data);
             } catch (err) {
                 console.error('Lỗi lấy chi tiết đơn hàng:', err.response?.data || err.message);

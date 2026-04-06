@@ -28,7 +28,7 @@ const SearchResultsPage = () => {
 
         const fetchProducts = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/products/search?keyword=${encodeURIComponent(searchKeyword)}`);
+                const response = await axios.get(`https://rubilia.store/api/products/search?keyword=${encodeURIComponent(searchKeyword)}`);
                 setProducts(response.data);
                 setFilteredProducts(response.data);
             } catch (err) {

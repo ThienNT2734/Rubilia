@@ -20,7 +20,7 @@ const AdminLogin = () => {
         setError('');
 
         try {
-            const response = await axios.post('http://localhost:8080/api/staff/login', formData);
+            const response = await axios.post('https://rubilia.store/api/staff/login', formData);
             login(response.data); // Lưu trạng thái đăng nhập
             navigate('/admin/dashboard');
         } catch (err) {

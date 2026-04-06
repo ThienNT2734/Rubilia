@@ -19,7 +19,7 @@ const ProductCard = ({ product }) => {
 
     // Lấy URL ảnh từ gallery
     const imageUrl = product.galleries && product.galleries[0]?.image
-        ? `http://localhost:8080${product.galleries[0].image}`
+        ? `https://rubilia.store${product.galleries[0].image}`
         : 'https://via.placeholder.com/150';
 
     // Lấy số lượng bán ra và số sao từ displayInfos

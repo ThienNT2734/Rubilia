@@ -56,7 +56,7 @@ const AdminDashboard = () => {
 
     const fetchOrders = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/orders', {
+            const response = await axios.get('https://rubilia.store/api/orders', {
                 headers: { 'Accept': 'application/json' },
             });
             setOrders(Array.isArray(response.data) ? response.data : []);
@@ -69,7 +69,7 @@ const AdminDashboard = () => {
 
     const fetchProducts = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/products', {
+            const response = await axios.get('https://rubilia.store/api/products', {
                 headers: { 'Accept': 'application/json' },
             });
             setProducts(Array.isArray(response.data) ? response.data : []);
@@ -82,7 +82,7 @@ const AdminDashboard = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/categories', {
+            const response = await axios.get('https://rubilia.store/api/categories', {
                 headers: { 'Accept': 'application/json' },
             });
             setCategories(Array.isArray(response.data) ? response.data : []);
@@ -95,7 +95,7 @@ const AdminDashboard = () => {
 
     const fetchSales = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/sales', {
+            const response = await axios.get('https://rubilia.store/api/sales', {
                 headers: { 'Accept': 'application/json' },
             });
             setSales(Array.isArray(response.data) ? response.data : []);
@@ -108,7 +108,7 @@ const AdminDashboard = () => {
 
     const fetchReviewPosts = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/review-posts', {
+            const response = await axios.get('https://rubilia.store/api/review-posts', {
                 headers: { 'Accept': 'application/json' },
             });
             setReviewPosts(Array.isArray(response.data) ? response.data : []);
@@ -123,7 +123,7 @@ const AdminDashboard = () => {
         try {
             const areas = displayAreasOptions.map(option => option.name);
             const fetchPromises = areas.map(area =>
-                axios.get(`http://localhost:8080/api/products/display-area/${area}`)
+                axios.get(`https://rubilia.store/api/products/display-area/${area}`)
                     .then(response => ({ area, products: response.data }))
                     .catch(error => {
                         console.error(`Error fetching products for ${area}:`, error);
@@ -187,7 +187,7 @@ const AdminDashboard = () => {
     const handleDeleteProduct = async (productId) => {
         if (window.confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
             try {
-                await axios.delete(`http://localhost:8080/api/products/${productId}`);
+                await axios.delete(`https://rubilia.store/api/products/${productId}`);
                 showToast('Xóa sản phẩm thành công!', 'success');
                 setProducts(products.filter(p => p.id !== productId));
             } catch (err) {
@@ -204,7 +204,7 @@ const AdminDashboard = () => {
     const handleDeleteCategory = async (categoryId) => {
         if (window.confirm('Bạn có chắc muốn xóa danh mục này?')) {
             try {
-                await axios.delete(`http://localhost:8080/api/categories/${categoryId}`);
+                await axios.delete(`https://rubilia.store/api/categories/${categoryId}`);
                 showToast('Xóa danh mục thành công!', 'success');
                 setCategories(categories.filter(c => c.id !== categoryId));
             } catch (err) {
@@ -221,7 +221,7 @@ const AdminDashboard = () => {
     const handleDeleteSale = async (saleId) => {
         if (window.confirm('Bạn có chắc muốn xóa Flash Sale này?')) {
             try {
-                await axios.delete(`http://localhost:8080/api/sales/${saleId}`);
+                await axios.delete(`https://rubilia.store/api/sales/${saleId}`);
                 showToast('Xóa Flash Sale thành công!', 'success');
                 setSales(sales.filter(s => s.id !== saleId));
             } catch (err) {
@@ -245,7 +245,7 @@ const AdminDashboard = () => {
             }
 
             const updatedProduct = adaptProductDataForUpdate(product, { quantity: parsedQuantity });
-            await axios.put(`http://localhost:8080/api/products/${productId}?staffId=${staff.id}`, updatedProduct);
+            await axios.put(`https://rubilia.store/api/products/${productId}?staffId=${staff.id}`, updatedProduct);
             showToast('Cập nhật tồn kho thành công!', 'success');
             setProducts(products.map(p => p.id === productId ? { ...p, quantity: parsedQuantity } : p));
         } catch (err) {
@@ -274,7 +274,7 @@ const AdminDashboard = () => {
                 : currentAreas.filter(a => a !== area);
 
             const updatedProduct = adaptProductDataForUpdate(product, { displayAreas: updatedAreas });
-            await axios.put(`http://localhost:8080/api/products/${productId}?staffId=${staff.id}`, updatedProduct);
+            await axios.put(`https://rubilia.store/api/products/${productId}?staffId=${staff.id}`, updatedProduct);
             showToast('Cập nhật khu vực hiển thị thành công!', 'success');
             fetchDisplayAreas();
             fetchProducts();
@@ -322,7 +322,7 @@ const AdminDashboard = () => {
                 rating,
                 displayAreas: currentAreas
             });
-            await axios.put(`http://localhost:8080/api/products/${productId}?staffId=${staff.id}`, updatedProduct);
+            await axios.put(`https://rubilia.store/api/products/${productId}?staffId=${staff.id}`, updatedProduct);
             showToast('Cập nhật số liệu sản phẩm thành công!', 'success');
             fetchProducts();
         } catch (err) {
@@ -337,7 +337,7 @@ const AdminDashboard = () => {
             if (!staff?.id) {
                 throw new Error('Không tìm thấy thông tin nhân viên. Vui lòng đăng nhập lại.');
             }
-            await axios.put(`http://localhost:8080/api/orders/${orderId}/approve?staffId=${staff.id}`);
+            await axios.put(`https://rubilia.store/api/orders/${orderId}/approve?staffId=${staff.id}`);
             showToast('Duyệt đơn hàng thành công!', 'success');
             await fetchOrders();
         } catch (err) {
@@ -352,7 +352,7 @@ const AdminDashboard = () => {
             if (!staff?.id) {
                 throw new Error('Không tìm thấy thông tin nhân viên. Vui lòng đăng nhập lại.');
             }
-            await axios.put(`http://localhost:8080/api/orders/${orderId}/ship?staffId=${staff.id}`);
+            await axios.put(`https://rubilia.store/api/orders/${orderId}/ship?staffId=${staff.id}`);
             showToast('Đánh dấu giao hàng thành công!', 'success');
             await fetchOrders();
         } catch (err) {
@@ -368,7 +368,7 @@ const AdminDashboard = () => {
     const handleDeleteReviewPost = async (reviewPostId) => {
         if (window.confirm('Bạn có chắc muốn xóa bài viết này?')) {
             try {
-                await axios.delete(`http://localhost:8080/api/review-posts/${reviewPostId}`);
+                await axios.delete(`https://rubilia.store/api/review-posts/${reviewPostId}`);
                 showToast('Xóa bài viết thành công!', 'success');
                 setReviewPosts(reviewPosts.filter(rp => rp.id !== reviewPostId));
             } catch (err) {
@@ -482,7 +482,7 @@ const AdminDashboard = () => {
                                                 <td>
                                                     {product.galleries && product.galleries.length > 0 ? (
                                                         <img
-                                                            src={`http://localhost:8080${product.galleries[0].image}`}
+                                                            src={`https://rubilia.store${product.galleries[0].image}`}
                                                             alt={product.productName}
                                                             className="product-image"
                                                             onError={(e) => {

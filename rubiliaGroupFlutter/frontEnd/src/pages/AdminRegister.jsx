@@ -23,7 +23,7 @@ const AdminRegister = () => {
         setError('');
 
         try {
-            const response = await axios.post('http://localhost:8080/api/staff/register', formData);
+            const response = await axios.post('https://rubilia.store/api/staff/register', formData);
             alert('Đăng ký thành công! Vui lòng đăng nhập.');
             navigate('/admin/login');
         } catch (err) {

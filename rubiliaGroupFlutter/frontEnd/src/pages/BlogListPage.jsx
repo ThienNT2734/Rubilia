@@ -10,7 +10,7 @@ const BlogListPage = () => {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/review-posts');
+                const response = await axios.get('https://rubilia.store/api/review-posts');
                 setPosts(response.data);
             } catch (err) {
                 console.error('Error fetching blog posts:', err);

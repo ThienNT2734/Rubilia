@@ -81,7 +81,7 @@ const Home = () => {
     useEffect(() => {
         const areas = Object.keys(productsByArea);
         const fetchPromises = areas.map(area =>
-            axios.get(`http://rubilia.store/api/products/display-area/${area}`)
+            axios.get(`https://rubilia.store/api/products/display-area/${area}`)
                 .then(response => {
                     const products = Array.isArray(response.data) ? response.data : [];
                     products.forEach(product => {
@@ -126,7 +126,7 @@ const Home = () => {
     useEffect(() => {
         const fetchLatestPosts = async () => {
             try {
-                const response = await axios.get('http://rubilia.store/api/review-posts');
+                const response = await axios.get('https://rubilia.store/api/review-posts');
                 const sortedPosts = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                 setLatestPosts(sortedPosts.slice(0, 5));
             } catch (err) {

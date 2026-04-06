@@ -55,7 +55,7 @@ const ReviewPostForm = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/products');
+                const response = await axios.get('https://rubilia.store/api/products');
                 setProducts(response.data);
             } catch (err) {
                 console.error('Lỗi lấy danh sách sản phẩm:', err);
@@ -82,7 +82,7 @@ const ReviewPostForm = () => {
         const uploadPromises = files.map(file => {
             const formData = new FormData();
             formData.append('file', file);
-            return axios.post('http://localhost:8080/api/files/upload', formData, {
+            return axios.post('https://rubilia.store/api/files/upload', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -129,7 +129,7 @@ const ReviewPostForm = () => {
             let response;
             if (editingPost) {
                 response = await axios.put(
-                    `http://localhost:8080/api/review-posts/${editingPost.id}?staffId=${staffId}`,
+                    `https://rubilia.store/api/review-posts/${editingPost.id}?staffId=${staffId}`,
                     postData,
                     config
                 );
@@ -137,7 +137,7 @@ const ReviewPostForm = () => {
                 alert('Cập nhật bài viết thành công!');
             } else {
                 response = await axios.post(
-                    `http://localhost:8080/api/review-posts?staffId=${staffId}`,
+                    `https://rubilia.store/api/review-posts?staffId=${staffId}`,
                     postData,
                     config
                 );

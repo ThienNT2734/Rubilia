@@ -35,7 +35,7 @@ const ResetPassword = () => {
         }
 
         try {
-            const response = await axios.post('http://localhost:8080/api/customers/reset-password', {
+            const response = await axios.post('https://rubilia.store/api/customers/reset-password', {
                 token,
                 newPassword: formData.newPassword,
                 confirmPassword: formData.confirmPassword

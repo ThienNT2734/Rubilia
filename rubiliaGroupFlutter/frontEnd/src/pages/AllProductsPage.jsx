@@ -6,7 +6,7 @@ const AllProductsPage = () => {
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
-        axios.get('http://localhost:8080/api/products')
+        axios.get('https://rubilia.store/api/products')
             .then(response => {
                 console.log('Total products:', response.data);
                 setProducts(response.data);

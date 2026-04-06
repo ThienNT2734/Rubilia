@@ -77,7 +77,7 @@ const Checkout = () => {
     };
 
     try {
-      const orderResponse = await axios.post('http://localhost:8080/api/orders', orderData);
+      const orderResponse = await axios.post('https://rubilia.store/api/orders', orderData);
       if (orderResponse.status === 200) {
         const orderId = orderResponse.data?.orderId || null;
         if (formData.paymentMethod === 'vnpay_web' || formData.paymentMethod === 'vnpay_qr' || formData.paymentMethod.startsWith('momo')) {
@@ -86,7 +86,7 @@ const Checkout = () => {
           }
 
           if (formData.paymentMethod.startsWith('momo')) {
-            const paymentResponse = await axios.post('http://localhost:8080/api/momo/create', {
+            const paymentResponse = await axios.post('https://rubilia.store/api/momo/create', {
               orderId,
               amount: orderData.totalPrice,
               paymentType: formData.paymentMethod,
@@ -100,7 +100,7 @@ const Checkout = () => {
           }
 
           const payType = formData.paymentMethod === 'vnpay_qr' ? 'QR' : 'WEB';
-          const paymentResponse = await axios.post('http://localhost:8080/api/vnpay/create', {
+          const paymentResponse = await axios.post('https://rubilia.store/api/vnpay/create', {
             orderId,
             amount: orderData.totalPrice,
             paymentType: payType,
