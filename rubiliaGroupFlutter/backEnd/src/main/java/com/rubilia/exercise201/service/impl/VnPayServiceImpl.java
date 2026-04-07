@@ -32,12 +32,11 @@ public class VnPayServiceImpl implements VnPayService {
             throw new IllegalStateException("VNPAY configuration missing TMN code or hash secret.");
         }
 
-        // 1. Khai báo tham số và dùng TreeMap để tự động sắp xếp theo Alphabet (A-Z)
         Map<String, String> vnp_Params = new TreeMap<>();
         vnp_Params.put("vnp_Version", "2.1.0");
         vnp_Params.put("vnp_Command", "pay");
         vnp_Params.put("vnp_TmnCode", vnpTmnCode);
-        vnp_Params.put("vnp_Amount", String.valueOf(amount * 100)); // Số tiền x 100 theo quy định VNPAY
+        vnp_Params.put("vnp_Amount", String.valueOf(amount * 100));
         vnp_Params.put("vnp_CurrCode", "VND");
         vnp_Params.put("vnp_TxnRef", orderId);
         vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang " + orderId);
@@ -50,38 +49,39 @@ public class VnPayServiceImpl implements VnPayService {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
         vnp_Params.put("vnp_CreateDate", formatter.format(cld.getTime()));
 
-        // 2. Xây dựng 2 chuỗi khác nhau: Một để băm (Hash) và một để làm Query String (URL)
+        List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
+        Collections.sort(fieldNames);
+
         StringBuilder hashData = new StringBuilder();
         StringBuilder query = new StringBuilder();
-        Iterator<Map.Entry<String, String>> itr = vnp_Params.entrySet().iterator();
+        
+        try {
+            for (int i = 0; i < fieldNames.size(); i++) {
+                String fieldName = fieldNames.get(i);
+                String fieldValue = vnp_Params.get(fieldName);
+                
+                if ((fieldValue != null) && (fieldValue.length() > 0)) {
+                    // Hash data nối chuỗi thô
+                    hashData.append(fieldName).append('=').append(fieldValue);
+                    
+                    // Query string phải URL Encode và xử lý Exception ở đây
+                    query.append(URLEncoder.encode(fieldName, StandardCharsets.UTF_8.toString()));
+                    query.append('=');
+                    query.append(URLEncoder.encode(fieldValue, StandardCharsets.UTF_8.toString()));
 
-        while (itr.hasNext()) {
-            Map.Entry<String, String> entry = itr.next();
-            String fieldName = entry.getKey();
-            String fieldValue = entry.getValue();
-
-            if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                // Build chuỗi Hash (KHÔNG URL Encode)
-                hashData.append(fieldName);
-                hashData.append('=');
-                hashData.append(fieldValue);
-
-                // Build chuỗi Query (CÓ URL Encode)
-                query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII));
-                query.append('=');
-                query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
-
-                if (itr.hasNext()) {
-                    query.append('&');
-                    hashData.append('&');
+                    if (i < fieldNames.size() - 1) {
+                        query.append('&');
+                        hashData.append('&');
+                    }
                 }
             }
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi Encode URL: " + e.getMessage());
         }
 
-        // 3. Tạo chữ ký bảo mật bằng HMAC-SHA512
         String vnp_SecureHash = hmacSHA512(vnpHashSecret, hashData.toString());
+        System.out.println("VNPAY DEBUG - HashData: " + hashData.toString());
         
-        // 4. Trả về URL hoàn chỉnh
         return vnpUrl + "?" + query.toString() + "&vnp_SecureHash=" + vnp_SecureHash;
     }
 
@@ -89,7 +89,6 @@ public class VnPayServiceImpl implements VnPayService {
     public boolean validateSecureHash(Map<String, String> queryParams) {
         String vnp_SecureHash = queryParams.get("vnp_SecureHash");
         
-        // Loại bỏ các tham số không dùng để tính toán chữ ký khi nhận phản hồi
         Map<String, String> filteredParams = new TreeMap<>();
         for (Map.Entry<String, String> entry : queryParams.entrySet()) {
             if (entry.getValue() != null && !entry.getValue().isEmpty() 
@@ -99,13 +98,12 @@ public class VnPayServiceImpl implements VnPayService {
             }
         }
 
-        // Tạo lại chuỗi hash từ dữ liệu phản hồi
         StringBuilder hashData = new StringBuilder();
-        Iterator<Map.Entry<String, String>> itr = filteredParams.entrySet().iterator();
-        while (itr.hasNext()) {
-            Map.Entry<String, String> entry = itr.next();
-            hashData.append(entry.getKey()).append('=').append(entry.getValue());
-            if (itr.hasNext()) {
+        List<String> fieldNames = new ArrayList<>(filteredParams.keySet());
+        for (int i = 0; i < fieldNames.size(); i++) {
+            String key = fieldNames.get(i);
+            hashData.append(key).append('=').append(filteredParams.get(key));
+            if (i < fieldNames.size() - 1) {
                 hashData.append('&');
             }
         }
@@ -114,7 +112,6 @@ public class VnPayServiceImpl implements VnPayService {
         return checkSum.equalsIgnoreCase(vnp_SecureHash);
     }
 
-    // Thuật toán băm chuẩn VNPAY v2.1.0
     private String hmacSHA512(String key, String data) {
         try {
             Mac hmac = Mac.getInstance("HmacSHA512");
@@ -129,7 +126,7 @@ public class VnPayServiceImpl implements VnPayService {
             }
             return hash.toString();
         } catch (Exception e) {
-            throw new RuntimeException("Lỗi tạo mã băm bảo mật", e);
+            throw new RuntimeException("VNPAY Hash Error", e);
         }
     }
-}
+}   
