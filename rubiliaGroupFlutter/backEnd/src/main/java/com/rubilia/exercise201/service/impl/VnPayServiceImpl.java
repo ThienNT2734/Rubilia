@@ -61,10 +61,8 @@ public class VnPayServiceImpl implements VnPayService {
                 String fieldValue = vnp_Params.get(fieldName);
                 
                 if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                    // Hash data nối chuỗi thô
-                    hashData.append(fieldName).append('=').append(fieldValue);
+                    hashData.append(fieldName).append('=').append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
                     
-                    // Query string phải URL Encode và xử lý Exception ở đây
                     query.append(URLEncoder.encode(fieldName, StandardCharsets.UTF_8.toString()));
                     query.append('=');
                     query.append(URLEncoder.encode(fieldValue, StandardCharsets.UTF_8.toString()));
@@ -102,7 +100,13 @@ public class VnPayServiceImpl implements VnPayService {
         List<String> fieldNames = new ArrayList<>(filteredParams.keySet());
         for (int i = 0; i < fieldNames.size(); i++) {
             String key = fieldNames.get(i);
-            hashData.append(key).append('=').append(filteredParams.get(key));
+            try {
+                hashData.append(URLEncoder.encode(key, StandardCharsets.US_ASCII.toString()));
+                hashData.append('=');
+                hashData.append(URLEncoder.encode(filteredParams.get(key), StandardCharsets.US_ASCII.toString()));
+            } catch (Exception e) {
+                throw new RuntimeException("Lỗi URL Encode: " + e.getMessage());
+            }
             if (i < fieldNames.size() - 1) {
                 hashData.append('&');
             }
