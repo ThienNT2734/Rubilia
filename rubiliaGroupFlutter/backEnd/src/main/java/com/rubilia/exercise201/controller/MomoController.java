@@ -22,6 +22,9 @@ public class MomoController {
 
     private static final Logger logger = LoggerFactory.getLogger(MomoController.class);
 
+    // ĐỊNH NGHĨA DOMAIN Ở ĐÂY ĐỂ DỄ QUẢN LÝ
+    private final String FRONTEND_URL = "https://rubilia.store";
+
     @Autowired
     private MomoService momoService;
 
@@ -40,11 +43,11 @@ public class MomoController {
             return orderService.findById(orderId)
                     .map(order -> {
                         if (!"PENDING".equalsIgnoreCase(order.getPaymentStatus())) {
-                            return (ResponseEntity<?>) ResponseEntity.badRequest().body("Đơn hàng chỉ có thể thanh toán khi đang ở trạng thái PENDING.");
+                            return ResponseEntity.badRequest().body("Đơn hàng chỉ có thể thanh toán khi đang ở trạng thái PENDING.");
                         }
                         long expectedAmount = order.getTotalPrice().longValue();
                         if (expectedAmount != request.getAmount().longValue()) {
-                            return (ResponseEntity<?>) ResponseEntity.badRequest().body("Số tiền gửi lên không khớp với đơn hàng.");
+                            return ResponseEntity.badRequest().body("Số tiền gửi lên không khớp với đơn hàng.");
                         }
 
                         String ipAddress = httpRequest.getRemoteAddr();
@@ -55,14 +58,10 @@ public class MomoController {
                         response.put("paymentType", paymentType == null ? "captureWallet" : paymentType);
                         return ResponseEntity.ok(response);
                     })
-                    .orElseGet(() -> (ResponseEntity<?>) ResponseEntity.badRequest().body("Đơn hàng không tồn tại."));
+                    .orElseGet(() -> ResponseEntity.badRequest().body("Đơn hàng không tồn tại."));
         } catch (Exception e) {
             logger.error("MoMo payment creation failed", e);
-            String message = e.getMessage();
-            if (e.getCause() != null && e.getCause().getMessage() != null) {
-                message += " | root cause: " + e.getCause().getMessage();
-            }
-            return ResponseEntity.status(500).body(Map.of("message", message));
+            return ResponseEntity.status(500).body(Map.of("message", e.getMessage()));
         }
     }
 
@@ -71,40 +70,39 @@ public class MomoController {
         String orderId = queryParams.get("orderId");
         String amount = queryParams.get("amount");
         String resultCode = queryParams.get("resultCode");
-        String signature = queryParams.get("signature");
 
+        // 1. Kiểm tra orderId
         if (orderId == null || orderId.isEmpty()) {
-            return new RedirectView("http://localhost:3000/checkout?status=failed&message=Missing+orderId");
+            return new RedirectView(FRONTEND_URL + "/checkout?status=failed&message=Missing+orderId");
         }
 
-        // *** CRITICAL SECURITY FIX: Validate signature ***
+        // 2. Validate Signature (Bảo mật)
         boolean isSignatureValid = momoService.validateSignature(queryParams);
         if (!isSignatureValid) {
             logger.error("MoMo return signature mismatch for orderId: {}", orderId);
-            return new RedirectView("http://localhost:3000/checkout?status=failed&message=Invalid+Signature");
+            return new RedirectView(FRONTEND_URL + "/checkout?status=failed&message=Invalid+Signature");
         }
 
         return orderService.findById(orderId)
                 .map(order -> {
-                    // *** CRITICAL SECURITY FIX: Validate amount ***
+                    // 3. Kiểm tra số tiền có khớp không
                     long expectedAmount = order.getTotalPrice().longValue();
                     if (Long.parseLong(amount) != expectedAmount) {
-                        return new RedirectView("http://localhost:3000/checkout?status=failed&orderId=" + order.getId() + "&message=Amount+mismatch");
+                        return new RedirectView(FRONTEND_URL + "/checkout?status=failed&orderId=" + order.getId() + "&message=Amount+mismatch");
                     }
 
+                    // 4. Xử lý trạng thái thanh toán
                     String finalStatus;
                     if ("0".equals(resultCode)) {
-                        if ("PAID".equalsIgnoreCase(order.getPaymentStatus())) {
-                            return new RedirectView("http://localhost:3000/checkout?status=success&orderId=" + order.getId() + "&message=Đơn+hàng+đã+được+thanh+toán+trước+đó");
-                        }
                         finalStatus = "PAID";
                         orderService.updatePaymentStatus(orderId, finalStatus);
+                        return new RedirectView(FRONTEND_URL + "/checkout?status=success&orderId=" + order.getId());
                     } else {
                         finalStatus = "FAILED";
                         orderService.updatePaymentStatus(orderId, finalStatus);
+                        return new RedirectView(FRONTEND_URL + "/checkout?status=failed&orderId=" + order.getId());
                     }
-                    return new RedirectView("http://localhost:3000/checkout?status=" + ("PAID".equals(finalStatus) ? "success" : "failed") + "&orderId=" + order.getId());
                 })
-                .orElseGet(() -> new RedirectView("http://localhost:3000/checkout?status=failed&message=Đơn+hàng+không+tồn+tại"));
+                .orElseGet(() -> new RedirectView(FRONTEND_URL + "/checkout?status=failed&message=Order+not+found"));
     }
 }

@@ -17,7 +17,7 @@ public class MethodRestConfig implements RepositoryRestConfigurer, WebMvcConfigu
     @Autowired
     private EntityManager entityManager;
 
-    private String url = "http://localhost:3000";
+    private String url = "https://rubilia.store";
 
     @Override
     public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry cors) {
