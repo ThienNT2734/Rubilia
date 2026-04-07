@@ -18,6 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.ForwardedHeaderFilter;
 
 import com.rubilia.exercise201.service.util.CustomerSecurityService;
 import com.rubilia.exercise201.service.util.StaffAccountSecurityService;
@@ -32,6 +33,12 @@ public class SecurityConfiguration {
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    // --- CẤU HÌNH QUAN TRỌNG CHO DEPLOY VPS (NGINX) ---
+    @Bean
+    public ForwardedHeaderFilter forwardedHeaderFilter() {
+        return new ForwardedHeaderFilter();
     }
 
     @Bean("customerAuthManager")
@@ -53,14 +60,11 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        
-        // CẤU HÌNH QUAN TRỌNG: Cho phép cả domain thật và localhost
         configuration.setAllowedOrigins(Arrays.asList(
             "http://localhost:3000", 
             "https://rubilia.store", 
             "http://rubilia.store"
         ));
-        
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "X-Requested-With"));
         configuration.setAllowCredentials(true);
@@ -78,14 +82,16 @@ public class SecurityConfiguration {
 
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(AbstractHttpConfigurer::disable) // Tắt CSRF để tránh lỗi 403 khi Register/Login
+            .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
+                // Mở cửa cho các luồng OAuth2 và Payment
                 .requestMatchers("/api/customers/login/**", "/api/customers/register/**", "/api/customers/oauth2/**").permitAll()
+                .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
+                .requestMatchers("/api/vnpay/**", "/api/momo/**").permitAll()
                 .requestMatchers("/api/staff/login/**").permitAll()
                 .requestMatchers("/api/products/**", "/api/sales/**", "/api/uploads/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/customer/**").authenticated()
-                .requestMatchers("/login/oauth2/code/**").permitAll()
                 .anyRequest().permitAll()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
@@ -93,6 +99,7 @@ public class SecurityConfiguration {
             .userDetailsService(staffDetailsService)
             .oauth2Login(oauth2 -> oauth2
                 .userInfoEndpoint(userInfo -> userInfo.oidcUserService(googleUserService))
+                // Sau khi Google đăng nhập xong, trả về link này để xử lý logic lưu User
                 .defaultSuccessUrl("/api/customers/oauth2/success", true)
                 .failureUrl("/api/customers/oauth2/failure")
             );
