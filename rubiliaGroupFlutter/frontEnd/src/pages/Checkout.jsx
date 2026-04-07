@@ -39,7 +39,7 @@ const Checkout = () => {
     const items = getCart().map(item => ({
       productId: item.id,
       quantity: item.quantity,
-      price: item.salePrice,
+      price: item.price || item.salePrice,
     }));
     setCartItems(items);
   }, [location.search, navigate]);

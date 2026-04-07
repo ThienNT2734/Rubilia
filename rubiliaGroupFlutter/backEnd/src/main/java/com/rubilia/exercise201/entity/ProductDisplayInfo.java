@@ -3,10 +3,12 @@ package com.rubilia.exercise201.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.math.BigDecimal;
 
 @Entity
+
 @Table(name = "product_display_info", 
        uniqueConstraints = @UniqueConstraint(name = "uk_product_display", columnNames = {"product_id", "display_area"}))
 @Getter
@@ -19,6 +21,7 @@ public class ProductDisplayInfo {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
+    @JsonIgnore
     private Product product;
 
     @Column(name = "display_area", nullable = false)

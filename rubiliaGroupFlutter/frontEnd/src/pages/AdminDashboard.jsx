@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import api from '../utils/axiosConfig';
 import { logout, isAuthenticated, getCurrentStaff } from '../utils/auth';
 import { adaptProductDataForUpdate } from '../utils/ProductDataAdapter';
 import '../css/AdminDashboard.css';
@@ -56,7 +56,7 @@ const AdminDashboard = () => {
 
     const fetchOrders = async () => {
         try {
-            const response = await axios.get('https://rubilia.store/api/orders', {
+            const response = await api.get('/orders', {
                 headers: { 'Accept': 'application/json' },
             });
             setOrders(Array.isArray(response.data) ? response.data : []);
@@ -69,7 +69,7 @@ const AdminDashboard = () => {
 
     const fetchProducts = async () => {
         try {
-            const response = await axios.get('https://rubilia.store/api/products', {
+            const response = await api.get('/products', {
                 headers: { 'Accept': 'application/json' },
             });
             setProducts(Array.isArray(response.data) ? response.data : []);
@@ -82,7 +82,7 @@ const AdminDashboard = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await axios.get('https://rubilia.store/api/categories', {
+            const response = await api.get('/categories', {
                 headers: { 'Accept': 'application/json' },
             });
             setCategories(Array.isArray(response.data) ? response.data : []);
@@ -95,7 +95,7 @@ const AdminDashboard = () => {
 
     const fetchSales = async () => {
         try {
-            const response = await axios.get('https://rubilia.store/api/sales', {
+            const response = await api.get('/sales', {
                 headers: { 'Accept': 'application/json' },
             });
             setSales(Array.isArray(response.data) ? response.data : []);
@@ -108,7 +108,7 @@ const AdminDashboard = () => {
 
     const fetchReviewPosts = async () => {
         try {
-            const response = await axios.get('https://rubilia.store/api/review-posts', {
+            const response = await api.get('/review-posts', {
                 headers: { 'Accept': 'application/json' },
             });
             setReviewPosts(Array.isArray(response.data) ? response.data : []);
@@ -123,7 +123,7 @@ const AdminDashboard = () => {
         try {
             const areas = displayAreasOptions.map(option => option.name);
             const fetchPromises = areas.map(area =>
-                axios.get(`https://rubilia.store/api/products/display-area/${area}`)
+                api.get(`/products/display-area/${area}`)
                     .then(response => ({ area, products: response.data }))
                     .catch(error => {
                         console.error(`Error fetching products for ${area}:`, error);
@@ -187,7 +187,7 @@ const AdminDashboard = () => {
     const handleDeleteProduct = async (productId) => {
         if (window.confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
             try {
-                await axios.delete(`https://rubilia.store/api/products/${productId}`);
+                await api.delete(`/products/${productId}`, { withCredentials: true });
                 showToast('Xóa sản phẩm thành công!', 'success');
                 setProducts(products.filter(p => p.id !== productId));
             } catch (err) {
@@ -204,7 +204,7 @@ const AdminDashboard = () => {
     const handleDeleteCategory = async (categoryId) => {
         if (window.confirm('Bạn có chắc muốn xóa danh mục này?')) {
             try {
-                await axios.delete(`https://rubilia.store/api/categories/${categoryId}`);
+                await api.delete(`/categories/${categoryId}`, { withCredentials: true });
                 showToast('Xóa danh mục thành công!', 'success');
                 setCategories(categories.filter(c => c.id !== categoryId));
             } catch (err) {
@@ -221,7 +221,7 @@ const AdminDashboard = () => {
     const handleDeleteSale = async (saleId) => {
         if (window.confirm('Bạn có chắc muốn xóa Flash Sale này?')) {
             try {
-                await axios.delete(`https://rubilia.store/api/sales/${saleId}`);
+                await api.delete(`/sales/${saleId}`, { withCredentials: true });
                 showToast('Xóa Flash Sale thành công!', 'success');
                 setSales(sales.filter(s => s.id !== saleId));
             } catch (err) {
@@ -245,7 +245,9 @@ const AdminDashboard = () => {
             }
 
             const updatedProduct = adaptProductDataForUpdate(product, { quantity: parsedQuantity });
-            await axios.put(`https://rubilia.store/api/products/${productId}?staffId=${staff.id}`, updatedProduct);
+            await api.put(`/products/${productId}?staffId=${staff.id}`, updatedProduct, {
+                withCredentials: true
+            });
             showToast('Cập nhật tồn kho thành công!', 'success');
             setProducts(products.map(p => p.id === productId ? { ...p, quantity: parsedQuantity } : p));
         } catch (err) {
@@ -274,7 +276,9 @@ const AdminDashboard = () => {
                 : currentAreas.filter(a => a !== area);
 
             const updatedProduct = adaptProductDataForUpdate(product, { displayAreas: updatedAreas });
-            await axios.put(`https://rubilia.store/api/products/${productId}?staffId=${staff.id}`, updatedProduct);
+            await api.put(`/products/${productId}?staffId=${staff.id}`, updatedProduct, {
+                withCredentials: true
+            });
             showToast('Cập nhật khu vực hiển thị thành công!', 'success');
             fetchDisplayAreas();
             fetchProducts();
@@ -322,7 +326,9 @@ const AdminDashboard = () => {
                 rating,
                 displayAreas: currentAreas
             });
-            await axios.put(`https://rubilia.store/api/products/${productId}?staffId=${staff.id}`, updatedProduct);
+            await api.put(`/products/${productId}?staffId=${staff.id}`, updatedProduct, {
+                withCredentials: true
+            });
             showToast('Cập nhật số liệu sản phẩm thành công!', 'success');
             fetchProducts();
         } catch (err) {
@@ -337,7 +343,9 @@ const AdminDashboard = () => {
             if (!staff?.id) {
                 throw new Error('Không tìm thấy thông tin nhân viên. Vui lòng đăng nhập lại.');
             }
-            await axios.put(`https://rubilia.store/api/orders/${orderId}/approve?staffId=${staff.id}`);
+            await api.put(`/orders/${orderId}/approve?staffId=${staff.id}`, {}, {
+                withCredentials: true
+            });
             showToast('Duyệt đơn hàng thành công!', 'success');
             await fetchOrders();
         } catch (err) {
@@ -352,7 +360,9 @@ const AdminDashboard = () => {
             if (!staff?.id) {
                 throw new Error('Không tìm thấy thông tin nhân viên. Vui lòng đăng nhập lại.');
             }
-            await axios.put(`https://rubilia.store/api/orders/${orderId}/ship?staffId=${staff.id}`);
+            await api.put(`/orders/${orderId}/ship?staffId=${staff.id}`, {}, {
+                withCredentials: true
+            });
             showToast('Đánh dấu giao hàng thành công!', 'success');
             await fetchOrders();
         } catch (err) {
@@ -368,7 +378,7 @@ const AdminDashboard = () => {
     const handleDeleteReviewPost = async (reviewPostId) => {
         if (window.confirm('Bạn có chắc muốn xóa bài viết này?')) {
             try {
-                await axios.delete(`https://rubilia.store/api/review-posts/${reviewPostId}`);
+                await api.delete(`/review-posts/${reviewPostId}`, { withCredentials: true });
                 showToast('Xóa bài viết thành công!', 'success');
                 setReviewPosts(reviewPosts.filter(rp => rp.id !== reviewPostId));
             } catch (err) {
@@ -441,6 +451,12 @@ const AdminDashboard = () => {
                         <span className="tab-icon">🖼️</span> Khu Vực Hiển Thị
                     </button>
                     <button
+                        className={`admin-dashboard-tab-btn ${activeTab === 'promotions' ? 'active' : ''}`}
+                        onClick={() => navigate('/admin/promotions')}
+                    >
+                        <span className="tab-icon">🎉</span> Khuyến Mãi
+                    </button>
+                    <button
                         className={`admin-dashboard-tab-btn ${activeTab === 'reviews-and-comments' ? 'active' : ''}`}
                         onClick={() => navigate('/admin/dashboard2')}
                     >
@@ -499,7 +515,7 @@ const AdminDashboard = () => {
                                                     )}
                                                 </td>
                                                 <td>{product.productName}</td>
-                                                <td>{product.salePrice ? product.salePrice.toLocaleString() : '0'} đ</td>
+                                                <td>{(product.price || product.salePrice) ? (product.price || product.salePrice).toLocaleString() : '0'} đ</td>
                                                 <td>{product.quantity}</td>
                                                 <td>
                                                     <input

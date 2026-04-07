@@ -7,31 +7,46 @@ import com.rubilia.exercise201.entity.SentimentType;
 import com.rubilia.exercise201.repository.CommentRepository;
 import com.rubilia.exercise201.service.CommentService;
 import com.rubilia.exercise201.service.GeminiService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired; // THÊM DÒNG NÀY
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
+// XÓA @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
 
-    private final CommentRepository commentRepository;
-    private final GeminiService geminiService;
+    @Autowired // Thay vì dùng private final
+    private CommentRepository commentRepository;
+
+    @Autowired // Thay vì dùng private final
+    private GeminiService geminiService;
 
     @Override
     public Comment createComment(String email, Comment comment) {
         comment.setEmail(email);
         comment.setStatus(CommentStatus.PENDING);
-        SentimentAnalysisResult result = geminiService.analyzeComment(
-                comment.getProduct() != null ? comment.getProduct().getProductName() : null,
-                comment.getContent()
-        );
-        comment.setSentiment(result.getSentiment() != null ? result.getSentiment() : SentimentType.UNKNOWN);
-        comment.setSentimentScore(result.getScore());
-        comment.setSentimentExplanation(result.getExplanation());
-        comment.setAnalyzedAt(LocalDateTime.now());
+
+        try {
+            // Gọi AI phân tích cảm xúc
+            SentimentAnalysisResult result = geminiService.analyzeComment(
+                    comment.getProduct() != null ? comment.getProduct().getProductName() : null,
+                    comment.getContent()
+            );
+
+            // Kiểm tra result khác null trước khi lấy dữ liệu
+            if (result != null) {
+                comment.setSentiment(result.getSentiment() != null ? result.getSentiment() : SentimentType.UNKNOWN);
+                comment.setSentimentScore(result.getScore());
+                comment.setSentimentExplanation(result.getExplanation());
+                comment.setAnalyzedAt(LocalDateTime.now());
+            }
+        } catch (Exception e) {
+            // Nếu AI lỗi, set mặc định để không làm treo ứng dụng
+            comment.setSentiment(SentimentType.UNKNOWN);
+        }
+
         return commentRepository.save(comment);
     }
 
@@ -60,6 +75,6 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<Comment> getAllComments() {
-        return commentRepository.findAll(); // Lấy tất cả bình luận
+        return commentRepository.findAll();
     }
 }

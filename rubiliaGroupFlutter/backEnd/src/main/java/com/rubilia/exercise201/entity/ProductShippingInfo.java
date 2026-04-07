@@ -21,7 +21,7 @@ public class ProductShippingInfo {
     private UUID id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = true)  // allow null for product_id
+    @JoinColumn(name = "product_id", nullable = true)
     @JsonIgnore
     private Product product;
 

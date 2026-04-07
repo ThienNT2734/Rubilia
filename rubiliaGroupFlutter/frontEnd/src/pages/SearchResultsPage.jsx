@@ -47,16 +47,16 @@ const SearchResultsPage = () => {
 
         // Sắp xếp sản phẩm
         if (sortOption === 'priceAsc') {
-            sortedProducts.sort((a, b) => (a.salePrice || 0) - (b.salePrice || 0));
+            sortedProducts.sort((a, b) => ((a.price || a.salePrice) || 0) - ((b.price || b.salePrice) || 0));
         } else if (sortOption === 'priceDesc') {
-            sortedProducts.sort((a, b) => (b.salePrice || 0) - (a.salePrice || 0));
+            sortedProducts.sort((a, b) => ((b.price || b.salePrice) || 0) - ((a.price || a.salePrice) || 0));
         } // 'default' giữ nguyên thứ tự gốc
 
         // Lọc theo khoảng giá
         const minPrice = parseFloat(priceRange.minPrice) || 0;
         const maxPrice = parseFloat(priceRange.maxPrice) || Infinity;
         sortedProducts = sortedProducts.filter(
-            product => (product.salePrice || 0) >= minPrice && (product.salePrice || 0) <= maxPrice
+            product => ((product.price || product.salePrice) || 0) >= minPrice && ((product.price || product.salePrice) || 0) <= maxPrice
         );
 
         setFilteredProducts(sortedProducts);

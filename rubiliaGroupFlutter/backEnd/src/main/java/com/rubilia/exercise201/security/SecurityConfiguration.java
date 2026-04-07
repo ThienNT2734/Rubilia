@@ -90,6 +90,8 @@ public class SecurityConfiguration {
                 .requestMatchers("/api/vnpay/**", "/api/momo/**").permitAll()
                 .requestMatchers("/api/staff/login/**").permitAll()
                 .requestMatchers("/api/products/**", "/api/sales/**", "/api/uploads/**").permitAll()
+                .requestMatchers("/api/products/*").permitAll()
+                .requestMatchers("/api/products/*").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/customer/**").authenticated()
                 .anyRequest().permitAll()

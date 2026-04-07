@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/axiosConfig';
 import { login } from '../utils/auth';
 
 const AdminLogin = () => {
@@ -20,7 +20,9 @@ const AdminLogin = () => {
         setError('');
 
         try {
-            const response = await axios.post('https://rubilia.store/api/staff/login', formData);
+            const response = await api.post('/staff/login', formData, {
+                withCredentials: true
+            });
             login(response.data); // Lưu trạng thái đăng nhập
             navigate('/admin/dashboard');
         } catch (err) {

@@ -10,6 +10,8 @@ import java.util.UUID;
 import java.util.List;
 import java.math.BigDecimal;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Getter
 @Setter
@@ -17,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @AllArgsConstructor
 @Entity
 @Table(name = "products")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -28,14 +31,101 @@ public class Product {
     @Column(name = "product_name", nullable = false)
     private String productName;
 
+    @Column(name = "compare_price")
+    private BigDecimal comparePrice = BigDecimal.ZERO;
+
     @Column
     private String sku;
 
-    @Column(name = "sale_price", nullable = false)
-    private BigDecimal salePrice = BigDecimal.ZERO;
+    @Column(name = "price", nullable = false)
+    private BigDecimal price = BigDecimal.ZERO;
 
-    @Column(name = "compare_price")
-    private BigDecimal comparePrice = BigDecimal.ZERO;
+    @JsonProperty("discountPercentage")
+    @Column(name = "discount_percentage")
+    private BigDecimal discountPercentage = BigDecimal.ZERO;
+
+    @JsonProperty("isOnPromotion")
+    @Column(name = "is_on_promotion")
+    private Boolean isOnPromotion = false;
+    
+    @JsonProperty("promotionStart")
+    @Column(name = "promotion_start")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date promotionStart;
+    
+    @JsonProperty("promotionEnd")
+    @Column(name = "promotion_end")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date promotionEnd;
+
+    public BigDecimal getSalePrice() {
+        return price;
+    }
+
+    public void setSalePrice(BigDecimal salePrice) {
+        this.price = salePrice;
+    }
+
+    public BigDecimal getComparePrice() {
+        return comparePrice;
+    }
+
+    public void setComparePrice(BigDecimal comparePrice) {
+        this.comparePrice = comparePrice;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    // Promotion getters and setters
+    public BigDecimal getDiscountPercentage() {
+        return discountPercentage;
+    }
+
+    public void setDiscountPercentage(BigDecimal discountPercentage) {
+        this.discountPercentage = discountPercentage;
+    }
+
+    public Date getPromotionStart() {
+        return promotionStart;
+    }
+
+    public void setPromotionStart(Date promotionStart) {
+        this.promotionStart = promotionStart;
+    }
+
+    public Date getPromotionEnd() {
+        return promotionEnd;
+    }
+
+    public void setPromotionEnd(Date promotionEnd) {
+        this.promotionEnd = promotionEnd;
+    }
+
+    public Boolean getIsOnPromotion() {
+        return isOnPromotion;
+    }
+
+    public void setIsOnPromotion(Boolean isOnPromotion) {
+        this.isOnPromotion = isOnPromotion;
+    }
+
+    // Get the effective price considering promotion
+    public BigDecimal getEffectivePrice() {
+        if (isOnPromotion != null && isOnPromotion && discountPercentage != null && discountPercentage.compareTo(BigDecimal.ZERO) > 0) {
+            Date now = new Date();
+            if (promotionStart != null && promotionEnd != null &&
+                now.after(promotionStart) && now.before(promotionEnd)) {
+                return price.subtract(price.multiply(discountPercentage.divide(BigDecimal.valueOf(100))));
+            }
+        }
+        return price;
+    }
 
     @Column(name = "buying_price")
     private BigDecimal buyingPrice;
@@ -81,15 +171,18 @@ public class Product {
     private StaffAccount updatedBy;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<ProductCategory> productCategories;
 
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
+    @JsonIgnore
     private ProductShippingInfo shippingInfo;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Gallery> galleries;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<ProductDisplayInfo> displayInfos;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -116,4 +209,6 @@ public class Product {
         simple,
         variable
     }
+
+    
 }

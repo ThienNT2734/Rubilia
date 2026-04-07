@@ -12,12 +12,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.web.servlet.view.RedirectView;
 import java.util.HashMap;
 import java.util.Map;
 
 @Controller
 @RequestMapping("/api/momo")
+@RequiredArgsConstructor
 public class MomoController {
 
     private static final Logger logger = LoggerFactory.getLogger(MomoController.class);
@@ -25,11 +28,9 @@ public class MomoController {
     // ĐỊNH NGHĨA DOMAIN Ở ĐÂY ĐỂ DỄ QUẢN LÝ
     private final String FRONTEND_URL = "https://rubilia.store";
 
-    @Autowired
-    private MomoService momoService;
+    private final MomoService momoService;
 
-    @Autowired
-    private OrderService orderService;
+    private final OrderService orderService;
 
     @PostMapping("/create")
     @ResponseBody
