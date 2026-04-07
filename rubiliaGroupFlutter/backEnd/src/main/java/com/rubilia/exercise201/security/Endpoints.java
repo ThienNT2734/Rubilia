@@ -1,7 +1,7 @@
 package com.rubilia.exercise201.security;
 
 public class Endpoints {
-    public static final String FRONT_END_HOST = "http://localhost:3000";
+    public static final String FRONT_END_HOST = "https://rubilia.store";
 
     // Các endpoint công khai cho mọi người (nếu có)
     public static final String[] PUBLIC_GET = {

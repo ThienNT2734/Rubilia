@@ -35,6 +35,8 @@ import com.rubilia.exercise201.service.CustomerService;
 @RequestMapping("/api/customers")
 public class CustomerController {
 
+    private final String FRONTEND_URL = "https://rubilia.store";
+
     @Autowired
     @Qualifier("customerAuthManager")
     private AuthenticationManager customerAuthManager;
@@ -135,7 +137,7 @@ public class CustomerController {
             return ResponseEntity.ok(
                 "<html><body>" +
                 "<script>" +
-                "window.opener.postMessage(" + errorResponse + ", 'http://localhost:3000');" +
+                "window.opener.postMessage(" + errorResponse + ", FRONTEND_URL);" +
                 "window.close();" +
                 "</script>" +
                 "</body></html>"
@@ -147,7 +149,7 @@ public class CustomerController {
             return ResponseEntity.ok(
                 "<html><body>" +
                 "<script>" +
-                "window.opener.postMessage(" + errorResponse + ", 'http://localhost:3000');" +
+                "window.opener.postMessage(" + errorResponse + ", FRONTEND_URL);" +
                 "window.close();" +
                 "</script>" +
                 "</body></html>"
@@ -163,7 +165,7 @@ public class CustomerController {
             return ResponseEntity.ok(
                 "<html><body>" +
                 "<script>" +
-                "window.opener.postMessage(" + errorResponse + ", 'http://localhost:3000');" +
+                "window.opener.postMessage(" + errorResponse + ", FRONTEND_URL);" +
                 "window.close();" +
                 "</script>" +
                 "</body></html>"
@@ -187,7 +189,7 @@ public class CustomerController {
             return ResponseEntity.ok(
                 "<html><body>" +
                 "<script>" +
-                "window.opener.postMessage(" + successResponse + ", 'http://localhost:3000');" +
+                "window.opener.postMessage(" + successResponse + ", FRONTEND_URL);" +
                 "window.close();" +
                 "</script>" +
                 "</body></html>"
@@ -203,7 +205,7 @@ public class CustomerController {
                 return ResponseEntity.ok(
                     "<html><body>" +
                     "<script>" +
-                    "window.opener.postMessage(" + infoResponse + ", 'http://localhost:3000');" +
+                    "window.opener.postMessage(" + infoResponse + ", FRONTEND_URL);" +
                     "window.close();" +
                     "</script>" +
                     "</body></html>"
@@ -233,7 +235,7 @@ public class CustomerController {
             return ResponseEntity.ok(
                 "<html><body>" +
                 "<script>" +
-                "window.opener.postMessage(" + successResponse + ", 'http://localhost:3000');" +
+                "window.opener.postMessage(" + successResponse + ", FRONTEND_URL);" +
                 "window.close();" +
                 "</script>" +
                 "</body></html>"
@@ -247,7 +249,7 @@ public class CustomerController {
         return ResponseEntity.ok(
             "<html><body>" +
             "<script>" +
-            "window.opener.postMessage(" + errorResponse + ", 'http://localhost:3000');" +
+            "window.opener.postMessage(" + errorResponse + ", FRONTEND_URL);" +
             "window.close();" +
             "</script>" +
             "</body></html>"
@@ -323,7 +325,7 @@ public class CustomerController {
             passwordResetTokenRepository.save(resetToken);
 
             // Gửi email với đường dẫn đặt lại mật khẩu
-            String resetLink = "http://localhost:3000/reset-password?token=" + token;
+            String resetLink = FRONTEND_URL + "/reset-password?token=" + token;
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(email);
             message.setSubject("Đặt lại mật khẩu - Rubilia");
