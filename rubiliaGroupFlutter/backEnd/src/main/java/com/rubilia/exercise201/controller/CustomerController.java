@@ -130,129 +130,41 @@ public class CustomerController {
         }
     }
 
-    @GetMapping("/oauth2/success")
+   @GetMapping("/oauth2/success")
     public ResponseEntity<String> oauth2LoginSuccess(Authentication authentication) {
-        if (authentication == null) {
-            String errorResponse = "{\"status\": \"error\", \"error\": \"Không tìm thấy thông tin xác thực.\"}";
-            return ResponseEntity.ok(
-                "<html><body>" +
-                "<script>" +
-                "window.opener.postMessage(" + errorResponse + ", FRONTEND_URL);" +
-                "window.close();" +
-                "</script>" +
-                "</body></html>"
-            );
-        }
+        String responseJson;
+        if (authentication != null && authentication.getPrincipal() instanceof OidcUser oidcUser) {
+            String email = oidcUser.getEmail();
+            Optional<Customer> existingCustomer = customerService.findByEmail(email);
 
-        if (!(authentication.getPrincipal() instanceof OidcUser oidcUser)) {
-            String errorResponse = "{\"status\": \"error\", \"error\": \"Không tìm thấy thông tin người dùng Google.\"}";
-            return ResponseEntity.ok(
-                "<html><body>" +
-                "<script>" +
-                "window.opener.postMessage(" + errorResponse + ", FRONTEND_URL);" +
-                "window.close();" +
-                "</script>" +
-                "</body></html>"
-            );
-        }
-
-        String email = oidcUser.getEmail();
-        String firstName = oidcUser.getGivenName();
-        String lastName = oidcUser.getFamilyName();
-
-        if (email == null) {
-            String errorResponse = "{\"status\": \"error\", \"error\": \"Không thể lấy email từ Google.\"}";
-            return ResponseEntity.ok(
-                "<html><body>" +
-                "<script>" +
-                "window.opener.postMessage(" + errorResponse + ", FRONTEND_URL);" +
-                "window.close();" +
-                "</script>" +
-                "</body></html>"
-            );
-        }
-
-        Optional<Customer> existingCustomer = customerService.findByEmail(email);
-        Customer customer;
-
-        if (existingCustomer.isPresent()) {
-            customer = existingCustomer.get();
-            String successResponse = String.format(
-                "{\"status\": \"success\", \"data\": {\"id\": \"%s\", \"userName\": \"%s\", \"email\": \"%s\", \"firstName\": \"%s\", \"lastName\": \"%s\", \"isOAuth2\": %b}}",
-                customer.getId().toString(),
-                customer.getUserName(),
-                customer.getEmail(),
-                customer.getFirstName(),
-                customer.getLastName(),
-                passwordEncoder.matches("oauth2_user", customer.getPasswordHash())
-            );
-            return ResponseEntity.ok(
-                "<html><body>" +
-                "<script>" +
-                "window.opener.postMessage(" + successResponse + ", FRONTEND_URL);" +
-                "window.close();" +
-                "</script>" +
-                "</body></html>"
-            );
-        } else {
-            if (firstName == null || lastName == null) {
-                String infoResponse = String.format(
-                    "{\"status\": \"info_required\", \"data\": {\"provider\": \"google\", \"email\": \"%s\", \"firstName\": %s, \"lastName\": %s}}",
-                    email,
-                    firstName != null ? "\"" + firstName + "\"" : "null",
-                    lastName != null ? "\"" + lastName + "\"" : "null"
-                );
-                return ResponseEntity.ok(
-                    "<html><body>" +
-                    "<script>" +
-                    "window.opener.postMessage(" + infoResponse + ", FRONTEND_URL);" +
-                    "window.close();" +
-                    "</script>" +
-                    "</body></html>"
-                );
+            if (existingCustomer.isPresent()) {
+                Customer c = existingCustomer.get();
+                responseJson = String.format("{\"status\": \"success\", \"data\": {\"id\": \"%s\", \"userName\": \"%s\", \"email\": \"%s\", \"firstName\": \"%s\", \"lastName\": \"%s\"}}",
+                        c.getId(), c.getUserName(), c.getEmail(), c.getFirstName(), c.getLastName());
+            } else {
+                responseJson = String.format("{\"status\": \"info_required\", \"data\": {\"email\": \"%s\", \"firstName\": \"%s\", \"lastName\": \"%s\"}}",
+                        email, oidcUser.getGivenName(), oidcUser.getFamilyName());
             }
-
-            customer = new Customer();
-            customer.setEmail(email);
-            customer.setUserName(email);
-            customer.setPasswordHash("oauth2_user");
-            customer.setFirstName(firstName != null ? firstName : "User");
-            customer.setLastName(lastName != null ? lastName : "Google");
-            customer.setRegisteredAt(new Date());
-            customer.setUpdatedAt(new Date());
-            customer.setActive(true);
-            customer = customerService.save(customer);
-
-            String successResponse = String.format(
-                "{\"status\": \"success\", \"data\": {\"id\": \"%s\", \"userName\": \"%s\", \"email\": \"%s\", \"firstName\": \"%s\", \"lastName\": \"%s\", \"isOAuth2\": %b}}",
-                customer.getId().toString(),
-                customer.getUserName(),
-                customer.getEmail(),
-                customer.getFirstName(),
-                customer.getLastName(),
-                true
-            );
-            return ResponseEntity.ok(
-                "<html><body>" +
-                "<script>" +
-                "window.opener.postMessage(" + successResponse + ", FRONTEND_URL);" +
-                "window.close();" +
-                "</script>" +
-                "</body></html>"
-            );
+        } else {
+            responseJson = "{\"status\": \"error\", \"error\": \"Xác thực thất bại\"}";
         }
+
+        return ResponseEntity.ok(
+            "<html><body><script>" +
+            // SỬA QUAN TRỌNG: Nối chuỗi để script nhận được 'https://rubilia.store'
+            "window.opener.postMessage(" + responseJson + ", '" + FRONTEND_URL + "');" +
+            "setTimeout(function() { window.close(); }, 500);" +
+            "</script></body></html>"
+        );
     }
 
     @GetMapping("/oauth2/failure")
     public ResponseEntity<String> oauth2LoginFailure() {
-        String errorResponse = "{\"status\": \"error\", \"error\": \"Đăng nhập OAuth2 thất bại.\"}";
         return ResponseEntity.ok(
-            "<html><body>" +
-            "<script>" +
-            "window.opener.postMessage(" + errorResponse + ", FRONTEND_URL);" +
+            "<html><body><script>" +
+            "window.opener.postMessage({\"status\": \"error\", \"error\": \"OAuth2 failed\"}, '" + FRONTEND_URL + "');" +
             "window.close();" +
-            "</script>" +
-            "</body></html>"
+            "</script></body></html>"
         );
     }
 
