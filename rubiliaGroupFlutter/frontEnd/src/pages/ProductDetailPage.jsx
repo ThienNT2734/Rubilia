@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import api from '../utils/axiosConfig';
 import axios from 'axios';
 import { addToCart } from '../utils/cartUtils';
 import { isAuthenticated, getCurrentUserEmail } from '../utils/auth';
-import ProductCard from '../components/ProductCard'; // Thêm import ProductCard
+import ProductCard from '../components/ProductCard';
 import '../css/ProductDetailPage.css';
 
 const ProductDetailPage = () => {
@@ -25,7 +26,7 @@ const ProductDetailPage = () => {
     const [ratingValue, setRatingValue] = useState(0);
 
     useEffect(() => {
-        axios.get(`https://rubilia.store/api/products/${id}`)
+        api.get(`/products/${id}`)
             .then(response => {
                 setProduct(response.data);
 
@@ -75,10 +76,17 @@ const ProductDetailPage = () => {
 
     const handleAddToCart = () => {
         if (product) {
+            // Logic giống Home - CHỈ dùng comparePrice và discountPercentage
+            const originalPrice = parseFloat(product.comparePrice || 0);
+            const discountPercent = product.discountPercentage ? parseFloat(product.discountPercentage) : 0;
+            const finalPrice = discountPercent > 0 
+                ? Math.round(originalPrice * (1 - discountPercent / 100))
+                : originalPrice;
+
             addToCart({
                 id: product.id,
                 productName: product.productName,
-                salePrice: product.salePrice,
+                salePrice: finalPrice,
                 image: product.galleries?.[0]?.image
             });
             showNotification('Đã thêm vào giỏ hàng!');
@@ -255,20 +263,42 @@ const ProductDetailPage = () => {
                     <p className="product-short-desc">
                         {product.shortDescription || 'Không có mô tả ngắn.'}
                     </p>
-                    <div className="price-section">
-                        {product.comparePrice > 0 && (
-                            <p className="compare-price">
-                                Giá gốc: ₫{product.comparePrice.toLocaleString()}
-                            </p>
-                        )}
-                        <p className="sale-price">
-                            Giá hiện tại: {product.salePrice ? product.salePrice.toLocaleString() : '0'}
-                        </p>
-                        {product.comparePrice > 0 && (
-                            <p className="discount">
-                                Giảm giá: {Math.round(((product.comparePrice - product.salePrice) / product.comparePrice) * 100)}%
-                            </p>
-                        )}
+                     <div className="price-section">
+                        {(() => {
+                             // Giá gốc: comparePrice (do admin set)
+                             const originalPrice = parseFloat(product.comparePrice || 0);
+                             
+                             // % giảm giá: CHỈ lấy từ discountPercentage (do admin thêm trong trang khuyến mãi)
+                             const discountPercent = product.discountPercentage ? parseFloat(product.discountPercentage) : 0;
+                             
+                             // Giá sau giảm: originalPrice - (% giảm) - GIỐNG HOÀN TOÀN NHƯ HOME
+                             const finalPrice = discountPercent > 0
+                                 ? Math.round(originalPrice * (1 - discountPercent / 100))
+                                 : originalPrice;
+                            
+                            const hasPromotion = discountPercent > 0;
+                            
+                            if (hasPromotion && originalPrice > 0) {
+                                return (
+                                    <>
+                                        <p className="sale-price" style={{color: '#ee4d2d', fontWeight: 'bold'}}>
+                                            Giá khuyến mãi: {finalPrice.toLocaleString()} đ
+                                        </p>
+                                        <p className="compare-price" style={{textDecoration: 'line-through', color: '#999'}}>
+                                            Giá gốc: {originalPrice.toLocaleString()} đ
+                                        </p>
+                                        <p className="discount" style={{color: '#fff', backgroundColor: '#ee4d2d', display: 'inline-block', padding: '2px 6px', borderRadius: '4px'}}>
+                                            Giảm: {discountPercent}%
+                                        </p>
+                                    </>
+                                );
+                            }
+                            return (
+                                <p className="sale-price">
+                                    Giá: {originalPrice > 0 ? originalPrice.toLocaleString() + ' đ' : 'Liên hệ'}
+                                </p>
+                            );
+                        })()}
                     </div>
                     <div className="extra-info">
                         <div className="info-item">

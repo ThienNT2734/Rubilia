@@ -26,11 +26,8 @@ public class VariantOption {
     @JsonIgnore
     private Product product;
 
-    @Column(name = "sale_price", nullable = false)
-    private BigDecimal salePrice = BigDecimal.ZERO;
-
-    @Column(name = "compare_price")
-    private BigDecimal comparePrice = BigDecimal.ZERO;
+    @Column(name = "price", nullable = false)
+    private BigDecimal price = BigDecimal.ZERO;
 
     @Column(name = "buying_price")
     private BigDecimal buyingPrice;
@@ -50,13 +47,12 @@ public class VariantOption {
     // Constructors
     public VariantOption() {}
 
-    public VariantOption(UUID id, String title, Gallery image, Product product, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String sku, Boolean active, List<Variant> variants) {
+    public VariantOption(UUID id, String title, Gallery image, Product product, BigDecimal price, BigDecimal buyingPrice, Integer quantity, String sku, Boolean active, List<Variant> variants) {
         this.id = id;
         this.title = title;
         this.image = image;
         this.product = product;
-        this.salePrice = salePrice;
-        this.comparePrice = comparePrice;
+        this.price = price;
         this.buyingPrice = buyingPrice;
         this.quantity = quantity;
         this.sku = sku;
@@ -98,19 +94,27 @@ public class VariantOption {
     }
 
     public BigDecimal getSalePrice() {
-        return salePrice;
+        return price;
     }
 
     public void setSalePrice(BigDecimal salePrice) {
-        this.salePrice = salePrice;
+        this.price = salePrice;
     }
 
     public BigDecimal getComparePrice() {
-        return comparePrice;
+        return price;
     }
 
     public void setComparePrice(BigDecimal comparePrice) {
-        this.comparePrice = comparePrice;
+        this.price = comparePrice;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
     public BigDecimal getBuyingPrice() {

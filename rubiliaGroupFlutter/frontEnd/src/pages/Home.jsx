@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Link, useLocation } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
+import NotificationBell from '../components/NotificationBell';
 import { handleSendMessage } from './chatbottrain';
+import api from '../utils/axiosConfig';
+import { getCurrentCustomer } from '../utils/auth';
 import '../css/Home.css';
+import '../css/MobileNotification.css';
 
 const Home = () => {
     const [productsByArea, setProductsByArea] = useState({
@@ -21,6 +24,25 @@ const Home = () => {
     const [messages, setMessages] = useState([]);
     const [userInput, setUserInput] = useState('');
     const location = useLocation();
+    const currentCustomer = getCurrentCustomer();
+    const [showNotifications, setShowNotifications] = useState(false);
+    const [notifications, setNotifications] = useState([]);
+    const [unseenCount, setUnseenCount] = useState(0);
+
+    // Load thông báo khi mở trang
+    useEffect(() => {
+        if (currentCustomer) {
+            // Load danh sách thông báo
+            api.get(`/notifications/customer/${currentCustomer.id}`)
+                .then(res => setNotifications(res.data))
+                .catch(err => console.log('Load notifications error', err));
+            
+            // Load số thông báo chưa xem
+            api.get(`/notifications/customer/${currentCustomer.id}/count-unseen`)
+                .then(res => setUnseenCount(res.data))
+                .catch(err => console.log('Count unseen error', err));
+        }
+    }, [currentCustomer]);
 
     const banners = [
         { id: 1, image: '/images/banners/main_banner.jpg', alt: 'Main Banner' },
@@ -81,7 +103,7 @@ const Home = () => {
     useEffect(() => {
         const areas = Object.keys(productsByArea);
         const fetchPromises = areas.map(area =>
-            axios.get(`https://rubilia.store/api/products/display-area/${area}`)
+            api.get(`/products/display-area/${area}`)
                 .then(response => {
                     const products = Array.isArray(response.data) ? response.data : [];
                     products.forEach(product => {
@@ -126,7 +148,7 @@ const Home = () => {
     useEffect(() => {
         const fetchLatestPosts = async () => {
             try {
-                const response = await axios.get('https://rubilia.store/api/review-posts');
+                const response = await api.get('/review-posts');
                 const sortedPosts = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                 setLatestPosts(sortedPosts.slice(0, 5));
             } catch (err) {
@@ -187,6 +209,120 @@ const Home = () => {
 
     return (
         <div className="home-container">
+            {/* Icon chuông thông báo cố định góc trên phải */}
+            <div style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 9999 }}>
+                <div
+                    onClick={() => setShowNotifications(!showNotifications)}
+                    style={{
+                        width: '45px',
+                        height: '45px',
+                        backgroundColor: 'white',
+                        borderRadius: '50%',
+                        boxShadow: '0 2px 10px rgba(0,0,0,0.15)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        fontSize: '20px',
+                        color: '#333',
+                        position: 'relative'
+                    }}>
+                <i className="fas fa-bell"></i>
+                {currentCustomer && unseenCount > 0 && (
+                    <span style={{
+                        position: 'absolute',
+                        top: '-5px',
+                        right: '-5px',
+                        backgroundColor: '#ff4d4f',
+                        color: 'white',
+                        fontSize: '11px',
+                        minWidth: '18px',
+                        height: '18px',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '0 3px'
+                    }}>{unseenCount}</span>
+                )}
+
+                </div>
+
+                {/* Popup danh sách thông báo */}
+                {showNotifications && (
+                    <div style={{
+                        position: 'absolute',
+                        top: '55px',
+                        right: '0',
+                        width: '360px',
+                        backgroundColor: 'white',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+                        overflow: 'hidden'
+                    }}>
+                        <div style={{
+                            padding: '12px 16px',
+                            borderBottom: '1px solid #f0f0f0',
+                            fontWeight: 600,
+                            backgroundColor: '#fafafa'
+                        }}>
+                            Thông báo khuyến mãi
+                        </div>
+                        <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                            {notifications.length === 0 ? (
+                                <div style={{ padding: '40px 20px', textAlign: 'center', color: '#999' }}>
+                                    Không có thông báo mới
+                                </div>
+                            ) : (
+                                notifications.map(notification => (
+                                    <Link
+                                        key={notification.id}
+                                        to={notification.relatedProductId ? `/product/${notification.relatedProductId}` : '#'}
+                                        style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            setShowNotifications(false);
+                                            
+                                            // Giảm số trên badge NGAY LẬP TỨC
+                                            if (!notification.isSeen) {
+                                                setUnseenCount(prev => Math.max(0, prev - 1));
+                                                setNotifications(prev => prev.map(n => 
+                                                    n.id === notification.id ? { ...n, isSeen: true } : n
+                                                ));
+                                            }
+                                            
+                                            // Chuyển trang
+                                            if (notification.relatedProductId) {
+                                                window.location.href = `/product/${notification.relatedProductId}`;
+                                            }
+                                        }}
+                                    >
+                                        <div style={{
+                                            padding: '12px 16px',
+                                            borderBottom: '1px solid #f5f5f5',
+                                            cursor: 'pointer',
+                                            backgroundColor: notification.isSeen ? 'white' : '#fff7f7',
+                                            transition: 'background 0.2s'
+                                        }}
+                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
+                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = notification.isSeen ? 'white' : '#fff7f7'}
+                                        >
+                                            {notification.imageUrl && (
+                                                <img src={notification.imageUrl} style={{ width: 40, height: 40, borderRadius: 4, float: 'left', marginRight: 12, objectFit: 'cover' }} alt="" />
+                                            )}
+                                            <div style={{ overflow: 'hidden' }}>
+                                                <div style={{ fontWeight: 600, marginBottom: '4px', color: '#333' }}>{notification.title}</div>
+                                                <div style={{ fontSize: '13px', color: '#666', lineHeight: 1.4 }}>{notification.content}</div>
+                                            </div>
+                                            <div style={{ clear: 'both' }}></div>
+                                        </div>
+                                    </Link>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                )}
+            </div>
             {/* Banner Section */}
             <div className="home-banner-section">
                 <div className="home-main-banner position-relative">

@@ -19,8 +19,11 @@ const ProductFormPage = () => {
 
     const [productForm, setProductForm] = useState({
         productName: editingProduct?.productName || '',
-        salePrice: editingProduct?.salePrice || '',
-        comparePrice: editingProduct?.comparePrice || '',
+        price: editingProduct?.price || editingProduct?.salePrice || editingProduct?.comparePrice || '',
+        discountPercentage: editingProduct?.discountPercentage || '',
+        promotionStart: editingProduct?.promotionStart ? new Date(editingProduct.promotionStart).toISOString().slice(0, 16) : '',
+        promotionEnd: editingProduct?.promotionEnd ? new Date(editingProduct.promotionEnd).toISOString().slice(0, 16) : '',
+        isOnPromotion: editingProduct?.isOnPromotion || false,
         quantity: editingProduct?.quantity || '',
         shortDescription: editingProduct?.shortDescription || '',
         productDescription: editingProduct?.productDescription || '',
@@ -167,14 +170,14 @@ const ProductFormPage = () => {
                 : [...productForm.images];
 
             // Chuẩn hóa dữ liệu trước khi gửi
-            const parsedSalePrice = parseFloat(productForm.salePrice) || 0;
-            const parsedComparePrice = parseFloat(productForm.comparePrice) || 0;
+            const parsedPrice = parseFloat(productForm.price) || 0;
+            const parsedDiscountPercentage = parseFloat(productForm.discountPercentage) || 0;
             const parsedQuantity = parseInt(productForm.quantity) || 0;
             const parsedSalesCount = parseFloat(productForm.salesCount) || 0;
             let parsedRating = parseFloat(productForm.rating) || 0;
 
-            if (parsedSalePrice < 0) throw new Error('Giá bán không hợp lệ');
-            if (parsedComparePrice < 0) throw new Error('Giá so sánh không hợp lệ');
+            if (parsedPrice < 0) throw new Error('Giá không hợp lệ');
+            if (parsedDiscountPercentage < 0 || parsedDiscountPercentage > 100) throw new Error('Phần trăm giảm giá phải từ 0 đến 100');
             if (parsedQuantity < 0) throw new Error('Số lượng không hợp lệ');
             if (parsedSalesCount < 0) throw new Error('Số lượng bán không hợp lệ');
             if (parsedRating < 1 || parsedRating > 5) parsedRating = 1; // Đặt mặc định nếu rating không hợp lệ
@@ -183,8 +186,11 @@ const ProductFormPage = () => {
             const productData = adaptProductDataForUpdate({
                 ...editingProduct,
                 productName: productForm.productName || '',
-                salePrice: parsedSalePrice,
-                comparePrice: parsedComparePrice,
+                price: parsedPrice,
+                discountPercentage: parsedDiscountPercentage,
+                promotionStart: productForm.promotionStart ? new Date(productForm.promotionStart).toISOString() : null,
+                promotionEnd: productForm.promotionEnd ? new Date(productForm.promotionEnd).toISOString() : null,
+                isOnPromotion: productForm.isOnPromotion,
                 quantity: parsedQuantity,
                 shortDescription: productForm.shortDescription || '',
                 productDescription: productForm.productDescription || '',
@@ -292,11 +298,11 @@ const ProductFormPage = () => {
                         />
                     </div>
                     <div className="product-form-group">
-                        <label className="product-form-label">Giá Bán</label>
+                        <label className="product-form-label">Giá</label>
                         <input
                             type="number"
-                            name="salePrice"
-                            value={productForm.salePrice}
+                            name="price"
+                            value={productForm.price}
                             onChange={handleInputChange}
                             className="product-form-control"
                             required
@@ -305,16 +311,48 @@ const ProductFormPage = () => {
                         />
                     </div>
                     <div className="product-form-group">
-                        <label className="product-form-label">Giá So Sánh</label>
+                        <label className="product-form-label">Phần Trăm Giảm Giá</label>
                         <input
                             type="number"
-                            name="comparePrice"
-                            value={productForm.comparePrice}
+                            name="discountPercentage"
+                            value={productForm.discountPercentage}
                             onChange={handleInputChange}
                             className="product-form-control"
                             min="0"
+                            max="100"
                             step="0.01"
                         />
+                    </div>
+                    <div className="product-form-group">
+                        <label className="product-form-label">Thời Gian Bắt Đầu Khuyến Mãi</label>
+                        <input
+                            type="datetime-local"
+                            name="promotionStart"
+                            value={productForm.promotionStart}
+                            onChange={handleInputChange}
+                            className="product-form-control"
+                        />
+                    </div>
+                    <div className="product-form-group">
+                        <label className="product-form-label">Thời Gian Kết Thúc Khuyến Mãi</label>
+                        <input
+                            type="datetime-local"
+                            name="promotionEnd"
+                            value={productForm.promotionEnd}
+                            onChange={handleInputChange}
+                            className="product-form-control"
+                        />
+                    </div>
+                    <div className="product-form-group">
+                        <label className="product-form-checkbox">
+                            <input
+                                type="checkbox"
+                                name="isOnPromotion"
+                                checked={productForm.isOnPromotion}
+                                onChange={handleInputChange}
+                            />
+                            Đang Khuyến Mãi
+                        </label>
                     </div>
                     <div className="product-form-group">
                         <label className="product-form-label">Số Lượng</label>

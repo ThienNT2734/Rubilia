@@ -80,7 +80,7 @@ const Cart = () => {
     };
 
     const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-    const totalPrice = cartItems.reduce((sum, item) => sum + (item.salePrice || 0) * item.quantity, 0);
+    const totalPrice = cartItems.reduce((sum, item) => sum + ((item.price || item.salePrice) || 0) * item.quantity, 0);
     const discountedPrice = totalPrice * (1 - discount);
 
     if (isLoading) {
@@ -125,7 +125,7 @@ const Cart = () => {
                         {cartItems.map(item => (
                             <div key={item.id} className="table-row">
                                 <span className="product-name">{item.productName || 'Không có tên'}</span>
-                                <span className="price">₫{(item.salePrice || 0).toLocaleString()}</span>
+                                <span className="price">₫{((item.price || item.salePrice) || 0).toLocaleString()}</span>
                                 <span className="quantity-control">
                                     <button
                                         className="quantity-btn"
@@ -141,7 +141,7 @@ const Cart = () => {
                                         +
                                     </button>
                                 </span>
-                                <span className="subtotal">₫{((item.salePrice || 0) * item.quantity).toLocaleString()}</span>
+                                <span className="subtotal">₫{(((item.price || item.salePrice) || 0) * item.quantity).toLocaleString()}</span>
                                 <span>
                                     <button
                                         className="remove-btn"

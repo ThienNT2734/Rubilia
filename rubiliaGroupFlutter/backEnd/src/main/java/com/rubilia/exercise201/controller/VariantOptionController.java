@@ -1,11 +1,14 @@
 package com.rubilia.exercise201.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.rubilia.exercise201.dto.VariantOptionDTO;
 import com.rubilia.exercise201.entity.Gallery;
 import com.rubilia.exercise201.entity.Product;
 import com.rubilia.exercise201.entity.VariantOption;
@@ -22,9 +25,24 @@ public class VariantOptionController {
     @Autowired
     private ProductService productService;
 
+    private VariantOptionDTO convertToDTO(VariantOption variantOption) {
+        VariantOptionDTO dto = new VariantOptionDTO();
+        dto.setId(variantOption.getId());
+        dto.setTitle(variantOption.getTitle());
+        dto.setImageId(null); // TODO: fix if needed
+        dto.setPrice(variantOption.getPrice());
+        dto.setBuyingPrice(variantOption.getBuyingPrice());
+        dto.setQuantity(variantOption.getQuantity());
+        dto.setSku(variantOption.getSku());
+        dto.setActive(variantOption.getActive());
+        return dto;
+    }
+
     @GetMapping
-    public ResponseEntity<List<VariantOption>> getAllVariantOptions() {
-        return ResponseEntity.ok(variantOptionService.findAll());
+    public ResponseEntity<List<VariantOptionDTO>> getAllVariantOptions() {
+        List<VariantOption> variantOptions = variantOptionService.findAll();
+        List<VariantOptionDTO> dtoList = variantOptions.stream().map(this::convertToDTO).collect(Collectors.toList());
+        return ResponseEntity.ok(dtoList);
     }
 
     @GetMapping("/{id}")

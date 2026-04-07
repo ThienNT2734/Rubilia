@@ -24,4 +24,6 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID> {
 
     @Query("SELECT c FROM Customer c WHERE c.phoneNumber = :phoneNumber")
     Optional<Customer> findByPhoneNumber(@Param("phoneNumber") String phoneNumber);
+
+    List<Customer> findAllByActiveTrue();
 }

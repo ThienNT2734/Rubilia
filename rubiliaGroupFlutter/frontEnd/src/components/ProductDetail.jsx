@@ -24,7 +24,7 @@ const ProductDetail = ({ product }) => {
                 <div className="col-md-6">
                     <h2>{product.productName || 'Không có tên'}</h2>
                     <p>{product.shortDescription || 'Không có mô tả'}</p>
-                    <p>Giá: {product.salePrice ? product.salePrice.toLocaleString() : '0'} đ</p>
+                    <p>Giá: {product.price ? product.price.toLocaleString() : (product.salePrice ? product.salePrice.toLocaleString() : '0')} đ</p>
                     <button className="btn btn-success">Thêm vào giỏ hàng</button>
                 </div>
             </div>

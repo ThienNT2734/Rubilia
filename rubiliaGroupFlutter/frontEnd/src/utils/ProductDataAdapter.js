@@ -24,9 +24,12 @@ export const adaptProductDataForUpdate = (product, updates = {}) => {
     };
 
     return {
-        productName: product.productName || '',
-        salePrice: safeParseFloat(product.salePrice),
-        comparePrice: safeParseFloat(product.comparePrice),
+        productName: updates.productName || product.productName || '',
+        price: safeParseFloat(updates.price || product.price || product.salePrice || product.comparePrice),
+        discountPercentage: safeParseFloat(updates.discountPercentage !== undefined ? updates.discountPercentage : product.discountPercentage),
+        promotionStart: updates.promotionStart !== undefined ? (updates.promotionStart ? new Date(updates.promotionStart).toISOString() : null) : (product.promotionStart ? new Date(product.promotionStart).toISOString() : null),
+        promotionEnd: updates.promotionEnd !== undefined ? (updates.promotionEnd ? new Date(updates.promotionEnd).toISOString() : null) : (product.promotionEnd ? new Date(product.promotionEnd).toISOString() : null),
+        isOnPromotion: updates.isOnPromotion !== undefined ? updates.isOnPromotion : (product.isOnPromotion || false),
         quantity: safeParseInt(product.quantity),
         shortDescription: product.shortDescription || '',
         productDescription: product.productDescription || '',

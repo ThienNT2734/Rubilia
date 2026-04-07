@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminDashboard2 from './pages/AdminDashboard2';
+import PromotionsPage from './pages/PromotionsPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import Cart from './pages/Cart';
 import UserProfile from './pages/UserProfile';
@@ -53,7 +54,10 @@ const AppContent = () => {
                     <Route path="/admin/login" element={<AdminLogin />} />
                     <Route path="/admin/dashboard" element={<AdminDashboard />} />
                     <Route path="/admin/dashboard2" element={<AdminDashboard2 />} />
+                    <Route path="/admin/promotions" element={<PromotionsPage />} />
                     <Route path="/admin/product-form" element={<ProductFormPage />} />
+                    <Route path="/admin/product/new" element={<ProductFormPage />} />
+                    <Route path="/admin/product/edit/:id" element={<ProductFormPage />} />
                     <Route path="/admin/review-post-form" element={<ReviewPostForm />} />
                     <Route path="/admin/category-form" element={<CategoryForm />} />
                     <Route path="/admin/sale-form" element={<SaleForm />} />

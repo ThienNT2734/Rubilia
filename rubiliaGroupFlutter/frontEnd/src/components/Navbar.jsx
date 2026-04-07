@@ -300,7 +300,7 @@ const Navbar = () => {
                                             <div className="search-result-info">
                                                 <span className="search-result-name">{product.productName}</span>
                                                 <span className="search-result-price">
-                                                    ₫{product.salePrice ? product.salePrice.toLocaleString() : '0'}
+                                                    ₫{(product.price || product.salePrice) ? (product.price || product.salePrice).toLocaleString() : '0'}
                                                 </span>
                                             </div>
                                         </Link>

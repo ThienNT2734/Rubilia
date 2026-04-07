@@ -2,15 +2,18 @@ package com.rubilia.exercise201.controller;
 
 import com.rubilia.exercise201.dto.*;
 import com.rubilia.exercise201.entity.*;
+import com.rubilia.exercise201.event.ProductPromotionEvent;
 import com.rubilia.exercise201.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -25,6 +28,9 @@ public class ProductController {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     @GetMapping
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
@@ -65,17 +71,24 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateProduct(
             @PathVariable UUID id,
             @RequestBody Map<String, Object> productData,
-            Authentication authentication) {
+            @RequestParam UUID staffId) {
         try {
-            StaffAccount staff = (StaffAccount) authentication.getPrincipal();
-            UUID staffId = staff.getId();
             JsonNode jsonNode = objectMapper.convertValue(productData, JsonNode.class);
-            return productService.update(id, jsonNode, staffId);
+            ResponseEntity<?> response = productService.update(id, jsonNode, staffId);
+
+            // Nếu cập nhật thành công và có discount_percentage thì gửi thông báo khuyến mãi
+            if (response.getStatusCode().is2xxSuccessful()) {
+                productService.getProductById(id).ifPresent(product -> {
+                    eventPublisher.publishEvent(new ProductPromotionEvent(this, product));
+                });
+            }
+
+            return response;
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(500).body("Lỗi khi cập nhật sản phẩm: " + e.getMessage());
         }
     }
@@ -93,24 +106,39 @@ public class ProductController {
         return ResponseEntity.ok(productDTOs);
     }
 
-    private ProductDTO convertToDTO(Product product) {
-        ProductDTO dto = new ProductDTO();
-        dto.setId(product.getId());
-        dto.setSlug(product.getSlug());
-        dto.setProductName(product.getProductName());
-        dto.setSku(product.getSku());
-        dto.setSalePrice(product.getSalePrice());
-        dto.setComparePrice(product.getComparePrice());
-        dto.setBuyingPrice(product.getBuyingPrice());
-        dto.setQuantity(product.getQuantity());
-        dto.setShortDescription(product.getShortDescription());
-        dto.setProductDescription(product.getProductDescription());
-        dto.setProductType(product.getProductType() != null ? product.getProductType().toString() : null);
-        dto.setPublished(product.getPublished());
-        dto.setDisableOutOfStock(product.getDisableOutOfStock());
-        dto.setNote(product.getNote());
-        dto.setCreatedAt(product.getCreatedAt());
-        dto.setUpdatedAt(product.getUpdatedAt());
+private ProductDTO convertToDTO(Product product) {
+    ProductDTO dto = new ProductDTO();
+    dto.setId(product.getId());
+    dto.setSlug(product.getSlug());
+    dto.setProductName(product.getProductName());
+    dto.setSku(product.getSku());
+    dto.setPrice(product.getPrice());
+    
+    // --- SỬA LỖI CUỐI CÙNG ---
+    // 1. TRUY XUẤT TRỰC TIẾP FIELD KHÔNG QUA GETTER
+    // Bỏ qua tất cả getter/setter và logic Entity
+    // Lấy trực tiếp discount_percentage từ database
+    BigDecimal discount = product.getDiscountPercentage();
+    if (discount == null) discount = BigDecimal.ZERO;
+    
+    dto.setDiscountPercentage(discount);
+    dto.setIsOnPromotion(discount.compareTo(BigDecimal.ZERO) > 0);
+    dto.setComparePrice(product.getComparePrice());
+    dto.setSalePrice(null);
+    // ----------------------
+
+    dto.setPromotionStart(product.getPromotionStart());
+    dto.setPromotionEnd(product.getPromotionEnd());
+    dto.setBuyingPrice(product.getBuyingPrice());
+    dto.setQuantity(product.getQuantity());
+    dto.setShortDescription(product.getShortDescription());
+    dto.setProductDescription(product.getProductDescription());
+    dto.setProductType(product.getProductType() != null ? product.getProductType().toString() : null);
+    dto.setPublished(product.getPublished());
+    dto.setDisableOutOfStock(product.getDisableOutOfStock());
+    dto.setNote(product.getNote());
+    dto.setCreatedAt(product.getCreatedAt());
+    dto.setUpdatedAt(product.getUpdatedAt());
 
         // Convert productCategories
         if (product.getProductCategories() != null) {

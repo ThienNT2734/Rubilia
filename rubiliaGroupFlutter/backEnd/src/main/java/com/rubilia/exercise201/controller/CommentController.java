@@ -5,7 +5,7 @@ import com.rubilia.exercise201.entity.CommentStatus;
 import com.rubilia.exercise201.entity.Product;
 import com.rubilia.exercise201.repository.ProductRepository;
 import com.rubilia.exercise201.service.CommentService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired; // THÊM DÒNG NÀY
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -15,11 +15,15 @@ import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/comments")
-@RequiredArgsConstructor
+// XÓA @RequiredArgsConstructor đi vì nó đang không hoạt động
 public class CommentController {
 
-    private final CommentService commentService;
-    private final ProductRepository productRepository;
+    @Autowired // Thay vì dùng final, dùng @Autowired để Spring tự nạp vào
+    private CommentService commentService;
+
+    @Autowired // Nạp ProductRepository vào đây
+    private ProductRepository productRepository;
+
     private static final Logger logger = LoggerFactory.getLogger(CommentController.class);
 
     @PostMapping
@@ -33,7 +37,10 @@ public class CommentController {
             UUID productId = comment.getProductId();
             Product product = productRepository.findById(productId)
                     .orElseThrow(() -> new IllegalArgumentException("Product not found with ID: " + productId));
+            
+            // LƯU Ý: Đảm bảo class Comment đã có hàm setProduct(Product p)
             comment.setProduct(product);
+            
             Comment createdComment = commentService.createComment(email, comment);
             logger.info("Tạo bình luận thành công với ID: {}", createdComment.getId());
             return ResponseEntity.ok(createdComment);

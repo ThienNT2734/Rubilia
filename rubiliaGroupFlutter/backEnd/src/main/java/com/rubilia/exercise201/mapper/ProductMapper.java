@@ -35,6 +35,24 @@ public class ProductMapper {
         product.setPublished(productJson.has("published") && !productJson.get("published").isNull() ? productJson.get("published").asBoolean() : false);
         product.setDisableOutOfStock(productJson.has("disableOutOfStock") && !productJson.get("disableOutOfStock").isNull() ? productJson.get("disableOutOfStock").asBoolean() : true);
 
+        // Xử lý promotion
+        product.setDiscountPercentage(productJson.has("discountPercentage") && productJson.get("discountPercentage").isNumber() ? BigDecimal.valueOf(productJson.get("discountPercentage").asDouble()) : BigDecimal.ZERO);
+        product.setIsOnPromotion(productJson.has("isOnPromotion") && !productJson.get("isOnPromotion").isNull() ? productJson.get("isOnPromotion").asBoolean() : false);
+        
+        // Xử lý promotionStart
+        try {
+            product.setPromotionStart(productJson.has("promotionStart") && !productJson.get("promotionStart").isNull() ? dateFormat.parse(productJson.get("promotionStart").asText()) : null);
+        } catch (Exception e) {
+            product.setPromotionStart(null);
+        }
+        
+        // Xử lý promotionEnd
+        try {
+            product.setPromotionEnd(productJson.has("promotionEnd") && !productJson.get("promotionEnd").isNull() ? dateFormat.parse(productJson.get("promotionEnd").asText()) : null);
+        } catch (Exception e) {
+            product.setPromotionEnd(null);
+        }
+
         // Xử lý createdAt và updatedAt an toàn
         try {
             product.setCreatedAt(productJson.has("createdAt") && !productJson.get("createdAt").isNull() ? dateFormat.parse(productJson.get("createdAt").asText()) : new Date());
@@ -73,7 +91,23 @@ public class ProductMapper {
         product.setPublished(productJson.has("published") && !productJson.get("published").isNull() ? productJson.get("published").asBoolean() : product.getPublished());
         product.setDisableOutOfStock(productJson.has("disableOutOfStock") && !productJson.get("disableOutOfStock").isNull() ? productJson.get("disableOutOfStock").asBoolean() : product.getDisableOutOfStock());
 
-        // Xử lý updatedAt an toàn
+        // Xử lý promotion
+        product.setDiscountPercentage(productJson.has("discountPercentage") && productJson.get("discountPercentage").isNumber() ? BigDecimal.valueOf(productJson.get("discountPercentage").asDouble()) : product.getDiscountPercentage());
+        product.setIsOnPromotion(productJson.has("isOnPromotion") && !productJson.get("isOnPromotion").isNull() ? productJson.get("isOnPromotion").asBoolean() : product.getIsOnPromotion());
+        
+        // Xử lý promotionStart
+        try {
+            product.setPromotionStart(productJson.has("promotionStart") && !productJson.get("promotionStart").isNull() ? dateFormat.parse(productJson.get("promotionStart").asText()) : product.getPromotionStart());
+        } catch (Exception e) {
+            product.setPromotionStart(product.getPromotionStart());
+        }
+        
+        // Xử lý promotionEnd
+        try {
+            product.setPromotionEnd(productJson.has("promotionEnd") && !productJson.get("promotionEnd").isNull() ? dateFormat.parse(productJson.get("promotionEnd").asText()) : product.getPromotionEnd());
+        } catch (Exception e) {
+            product.setPromotionEnd(product.getPromotionEnd());
+        }
         try {
             product.setUpdatedAt(productJson.has("updatedAt") && !productJson.get("updatedAt").isNull() ? dateFormat.parse(productJson.get("updatedAt").asText()) : new Date());
         } catch (Exception e) {
