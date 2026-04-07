@@ -48,7 +48,7 @@ export const loginGoogle = async () => {
         const height = 600;
         const left = (window.screen.width - width) / 2;
         const top = (window.screen.height - height) / 2;
-        const url = `https://rubilia.store/oauth2/authorization/google?redirect_uri=http://rubilia.store/login/oauth2/code/google`;
+        const url = `https://rubilia.store/oauth2/authorization/google?redirect_uri=https://rubilia.store/login/oauth2/code/google`;
         window.open(url, 'oauth2', `width=${width},height=${height},top=${top},left=${left}`);
 
         // Trả về một Promise để chờ kết quả từ popup
