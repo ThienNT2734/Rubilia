@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import api from '../utils/axiosConfig';
-import { login } from '../utils/auth';
+import { login, isAdminAuthenticated } from '../utils/auth';
 
 const AdminLogin = () => {
     const [formData, setFormData] = useState({
@@ -10,6 +10,15 @@ const AdminLogin = () => {
     });
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // Nếu đã đăng nhập admin rồi thì chuyển hướng về dashboard
+    useEffect(() => {
+        if (isAdminAuthenticated()) {
+            const from = location.state?.from?.pathname || '/admin/dashboard';
+            navigate(from, { replace: true });
+        }
+    }, [navigate, location]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -24,7 +33,9 @@ const AdminLogin = () => {
                 withCredentials: true
             });
             login(response.data); // Lưu trạng thái đăng nhập
-            navigate('/admin/dashboard');
+            // Chuyển hướng về trang người dùng muốn truy cập trước đó hoặc dashboard
+            const from = location.state?.from?.pathname || '/admin/dashboard';
+            navigate(from, { replace: true });
         } catch (err) {
             console.error('Lỗi đăng nhập:', err.response?.data || err.message);
             const errorMessage = err.response?.data || 'Lỗi khi đăng nhập. Vui lòng thử lại.';
