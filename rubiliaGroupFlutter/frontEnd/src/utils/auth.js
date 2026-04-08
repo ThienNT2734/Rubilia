@@ -146,3 +146,24 @@ export const getCurrentUserEmail = () => {
     console.error('No email found for authenticated user. Staff:', !!staff, 'Customer:', !!customer);
     return null;
 };
+
+// Kiểm tra xem người dùng đã đăng nhập với vai trò admin/staff chưa
+export const isAdminAuthenticated = () => {
+    const staff = getCurrentStaff();
+    return !!staff;
+};
+
+// Kiểm tra xem người dùng có role ADMIN không (nếu backend trả về roles)
+export const hasAdminRole = () => {
+    const staff = getCurrentStaff();
+    if (!staff) return false;
+    // Kiểm tra nếu staff có roles chứa ADMIN, hoặc role là admin
+    if (staff.roles && Array.isArray(staff.roles)) {
+        return staff.roles.some(role => role === 'ADMIN' || role === 'ROLE_ADMIN');
+    }
+    if (staff.role) {
+        return staff.role === 'ADMIN' || staff.role === 'ROLE_ADMIN';
+    }
+    // Nếu không có thông tin role, mặc định staff là admin
+    return true;
+};

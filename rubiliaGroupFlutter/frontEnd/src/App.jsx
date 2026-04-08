@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import AdminProtectedRoute from './components/AdminProtectedRoute';
 import Home from './pages/Home';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
@@ -52,16 +53,16 @@ const AppContent = () => {
                     <Route path="/product/:id" element={<ProductDetailPage />} />
                     <Route path="/cart" element={<Cart />} />
                     <Route path="/admin/login" element={<AdminLogin />} />
-                    <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                    <Route path="/admin/dashboard2" element={<AdminDashboard2 />} />
-                    <Route path="/admin/promotions" element={<PromotionsPage />} />
-                    <Route path="/admin/product-form" element={<ProductFormPage />} />
-                    <Route path="/admin/product/new" element={<ProductFormPage />} />
-                    <Route path="/admin/product/edit/:id" element={<ProductFormPage />} />
-                    <Route path="/admin/review-post-form" element={<ReviewPostForm />} />
-                    <Route path="/admin/category-form" element={<CategoryForm />} />
-                    <Route path="/admin/sale-form" element={<SaleForm />} />
-                    <Route path="/admin/order-details/:orderId" element={<OrderDetails />} />
+                    <Route path="/admin/dashboard" element={<AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute>} />
+                    <Route path="/admin/dashboard2" element={<AdminProtectedRoute><AdminDashboard2 /></AdminProtectedRoute>} />
+                    <Route path="/admin/promotions" element={<AdminProtectedRoute><PromotionsPage /></AdminProtectedRoute>} />
+                    <Route path="/admin/product-form" element={<AdminProtectedRoute><ProductFormPage /></AdminProtectedRoute>} />
+                    <Route path="/admin/product/new" element={<AdminProtectedRoute><ProductFormPage /></AdminProtectedRoute>} />
+                    <Route path="/admin/product/edit/:id" element={<AdminProtectedRoute><ProductFormPage /></AdminProtectedRoute>} />
+                    <Route path="/admin/review-post-form" element={<AdminProtectedRoute><ReviewPostForm /></AdminProtectedRoute>} />
+                    <Route path="/admin/category-form" element={<AdminProtectedRoute><CategoryForm /></AdminProtectedRoute>} />
+                    <Route path="/admin/sale-form" element={<AdminProtectedRoute><SaleForm /></AdminProtectedRoute>} />
+                    <Route path="/admin/order-details/:orderId" element={<AdminProtectedRoute><OrderDetails /></AdminProtectedRoute>} />
                     <Route path="/user/profile" element={<UserProfile />} />
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/all-products" element={<AllProductsPage />} />
